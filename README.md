@@ -33,4 +33,4 @@
 </script>
 ```
 
-![Preview](https://raw.githubusercontent.com/shabuninil/coreui-layout/main/preview.png) 
+![Preview](https://raw.githubusercontent.com/shabuninil/coreui-layout/master/preview.png) 
