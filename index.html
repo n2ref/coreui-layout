@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html id="page-content">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoreUI Layout</title>
+
+    <link href="dist/page.min.css" rel="stylesheet"/>
+    <script src="dist/page.min.js"></script>
+
+    <script src="dist/coreui-layout.min.js"></script>
+
+    <script src="src/js/examples.js"></script>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#docs-sidenav">
+
+    <section class="text-left">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 mb-5">
+                    <header>
+                        <nav class="navbar navbar-expand-lg navbar-default">
+                            <div class="container-fluid">
+                                <a class="navbar-brand" href="#">CoreUI</a>
+                                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                    <span class="navbar-toggler-icon"></span>
+                                </button>
+                                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                        <li class="nav-item"><a class="nav-link" href="https://shabuninil.github.io/coreui-panel">Panel</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="https://shabuninil.github.io/coreui-form">Form</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="https://shabuninil.github.io/coreui-tabs">Tabs</a></li>
+                                        <li class="nav-item"><span class="nav-link active">Layout</span></li>
+                                        <li class="nav-item"><a class="nav-link" href="https://shabuninil.github.io/coreui-table">Table</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="https://shabuninil.github.io/coreui-info">Info</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="https://shabuninil.github.io/coreui-modal">Modal</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="https://shabuninil.github.io/coreui-notice">Notice</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="https://shabuninil.github.io/coreui-alert">Alert</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="https://shabuninil.github.io/coreui-confirm">Confirm</a></li>
+                                    </ul>
+
+                                    <ul class="nav navbar-nav navbar-right">
+                                        <li class="nav-item"><a class="nav-link" href="https://github.com/shabuninil/coreui-layout">GitHub</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </nav>
+                    </header>
+                </div>
+                <div class="col-lg-2">
+                    <div id="docs-sidenav" class="hidden-xs hidden-sm hidden-md d-none d-lg-block"
+                         data-bs-spy="affix" data-bs-offset-top="90" data-bs-offset-bottom="70">
+                        <ul class="nav">
+                            <li><a href="#download">Download</a></li>
+                            <li>
+                                <a href="#examples">Examples</a>
+                                <ul class="nav">
+                                    <li><a href="#example-simple">Simple layout</a></li>
+                                    <li><a href="#example-nested">Nested</a></li>
+                                    <li><a href="#example-direction">Direction</a></li>
+                                    <li><a href="#example-justify">Justify content</a></li>
+                                    <li><a href="#example-align">Align items</a></li>
+                                    <li><a href="#example-align-self">Align self</a></li>
+                                    <li><a href="#example-fill">Fill</a></li>
+                                    <li><a href="#example-wrap">Wrap</a></li>
+                                    <li><a href="#example-order">Order</a></li>
+                                    <li><a href="#example-sizes">Size options</a></li>
+                                    <li><a href="#example-overflow">Overflow</a></li>
+                                    <li><a href="#example-all">All options</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#options-layout">Options layout</a></li>
+                            <li><a href="#options-layout-item">Options layout item</a></li>
+                            <li><a href="#methods">Methods</a></li>
+                            <li><a href="#events">Events</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-10">
+                    <h2 id="download">Download</h2>
+                    <div>
+                        <p>
+                            You can download a minimized version of the library or get the full source code at github.com.
+                        </p>
+                        <a class="btn btn-secondary" href="https://github.com/shabuninil/coreui-layout/archive/master.zip">Download source</a>
+                    </div>
+
+
+                    <h2 class="section-margin">Install with npm</h2>
+                    <pre><code class="bash">$ npm install coreui-layout</code></pre>
+
+
+                    <h2 class="section-margin">Требования</h2>
+                    <p>
+                        Для корректной работы на странице необходимо наличие:
+                        <a href="https://getbootstrap.com/docs/5.3" target="_blank">Bootstrap 5</a>,
+                        <a href="https://jquery.com" target="_blank">jquery</a>
+                    </p>
+
+                    <h2 id="examples" class="section-margin">Examples</h2>
+                    <div>
+                        <h3 id="example-simple">Simple layout</h3>
+                        <div>
+                            <div class="content-example">
+                                <div id="layout-items"></div>
+                            </div>
+                            <div class="content-markup">
+                                <pre><code class="html">
+    &lt;div id="layout-items"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        let layout = CoreUI.layout.create({
+            items: [
+                { width: 200, content: "Left" },
+                { content: "Center" },
+                { width: 150, content: "Right" },
+            ]
+        });
+        layout.render('layout-items');
+    &lt;/script&gt;
+                                </code></pre>
+                            </div>
+                        </div>
+                        <br><br>
+
+                        <h3 id="example-nested">Nested</h3>
+                        <div>
+                            <div class="content-example">
+                                <div id="layout-nested"></div>
+                            </div>
+                            <div class="content-markup">
+                                <pre><code class="html">
+    &lt;div id="layout-nested"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        CoreUI.layout.create({
+            items: [
+                { width: 200, content: "Left" },
+                { content: "Center" },
+                { fill: true, content: {
+                    component: 'coreui.layout',
+                    items: [
+                        { width: 200, content: "Left" },
+                        { content: "Center" },
+                        { width: 150, content: "Right" },
+                    ]
+                }},
+            ]
+        }).render('layout-nested');
+    &lt;/script&gt;
+                                </code></pre>
+                            </div>
+                        </div>
+                        <br><br>
+
+
+                        <h3 id="example-direction">Direction</h3>
+                        <div>
+                            <div class="content-example">
+                                <div id="layout-direction-row"></div><br>
+                                <div id="layout-direction-row-reverse"></div><br>
+                                <div id="layout-direction-column"></div><br>
+                                <div id="layout-direction-column-reverse"></div>
+                            </div>
+                            <div class="content-markup">
+                                <pre><code class="html">
+    &lt;div id="layout-direction-row"&gt;&lt;/div&gt;
+    &lt;div id="layout-direction-row-reverse"&gt;&lt;/div&gt;
+    &lt;div id="layout-direction-column"&gt;&lt;/div&gt;
+    &lt;div id="layout-direction-column-reverse"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        let directionItems = [
+            { "width": 200, "content": "Left" },
+            { "content": "Center" },
+            { "width": 150, "content": "Right" },
+        ];
+
+        CoreUI.layout.create({ direction: "row",            items: directionItems }).render('layout-direction-row');
+        CoreUI.layout.create({ direction: "row-reverse",    items: directionItems }).render('layout-direction-row-reverse');
+        CoreUI.layout.create({ direction: "column",         items: directionItems }).render('layout-direction-column');
+        CoreUI.layout.create({ direction: "column-reverse", items: directionItems }).render('layout-direction-column-reverse');
+    &lt;/script&gt;
+                                </code></pre>
+                            </div>
+                        </div>
+                        <br><br>
+
+
+                        <h3 id="example-justify">Justify content</h3>
+                        <div>
+                            <div class="content-example">
+                                <div id="layout-justify-start"></div><br>
+                                <div id="layout-justify-end"></div><br>
+                                <div id="layout-justify-center"></div><br>
+                                <div id="layout-justify-between"></div><br>
+                                <div id="layout-justify-around"></div><br>
+                                <div id="layout-justify-evenly"></div>
+                            </div>
+                            <div class="content-markup">
+                                <pre><code class="html">
+    &lt;div id="layout-justify-start"&gt;&lt;/div&gt;
+    &lt;div id="layout-justify-end"&gt;&lt;/div&gt;
+    &lt;div id="layout-justify-center"&gt;&lt;/div&gt;
+    &lt;div id="layout-justify-between"&gt;&lt;/div&gt;
+    &lt;div id="layout-justify-around"&gt;&lt;/div&gt;
+    &lt;div id="layout-justify-evenly"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        let justifyItems = [
+            { "width": 200, "content": "Left" },
+            { "content": "Center" },
+            { "width": 150, "content": "Right" },
+        ];
+
+        CoreUI.layout.create({ justify: "start",   items: justifyItems }).render('layout-justify-start');
+        CoreUI.layout.create({ justify: "end",     items: justifyItems }).render('layout-justify-end');
+        CoreUI.layout.create({ justify: "center",  items: justifyItems }).render('layout-justify-center');
+        CoreUI.layout.create({ justify: "between", items: justifyItems }).render('layout-justify-between');
+        CoreUI.layout.create({ justify: "around",  items: justifyItems }).render('layout-justify-around');
+        CoreUI.layout.create({ justify: "evenly",  items: justifyItems }).render('layout-justify-evenly');
+    &lt;/script&gt;
+                                </code></pre>
+                            </div>
+                        </div>
+                        <br><br>
+
+
+                        <h3 id="example-align">Align items</h3>
+                        <div>
+                            <div class="content-example">
+                                <div id="layout-align-start"></div><br>
+                                <div id="layout-align-end"></div><br>
+                                <div id="layout-align-center"></div><br>
+                                <div id="layout-align-baseline"></div><br>
+                                <div id="layout-align-stretch"></div>
+                            </div>
+                            <div class="content-markup">
+                                <pre><code class="html">
+    &lt;div id="layout-align-start"&gt;&lt;/div&gt;
+    &lt;div id="layout-align-end"&gt;&lt;/div&gt;
+    &lt;div id="layout-align-center"&gt;&lt;/div&gt;
+    &lt;div id="layout-align-baseline"&gt;&lt;/div&gt;
+    &lt;div id="layout-align-stretch"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        let alignItems = [
+            { "width": 200, "content": "Left" },
+            { "content": "Center" },
+            { "width": 150, "content": "Right" },
+        ];
+
+        CoreUI.layout.create({ align: "start",    height: 100, items: alignItems }).render('layout-align-start');
+        CoreUI.layout.create({ align: "end",      height: 100, items: alignItems }).render('layout-align-end');
+        CoreUI.layout.create({ align: "center",   height: 100, items: alignItems }).render('layout-align-center');
+        CoreUI.layout.create({ align: "baseline", height: 100, items: alignItems }).render('layout-align-baseline');
+        CoreUI.layout.create({ align: "stretch",  height: 100, items: alignItems }).render('layout-align-stretch');
+    &lt;/script&gt;
+                                </code></pre>
+                            </div>
+                        </div>
+                        <br><br>
+
+
+                        <h3 id="example-align-self">Align self</h3>
+                        <div>
+                            <div class="content-example">
+                                <div id="layout-align-self-start"></div><br>
+                                <div id="layout-align-self-end"></div><br>
+                                <div id="layout-align-self-center"></div><br>
+                                <div id="layout-align-self-baseline"></div><br>
+                                <div id="layout-align-self-stretch"></div>
+                            </div>
+                            <div class="content-markup">
+                                <pre><code class="html">
+    &lt;div id="layout-align-self-start"&gt;&lt;/div&gt;
+    &lt;div id="layout-align-self-end"&gt;&lt;/div&gt;
+    &lt;div id="layout-align-self-center"&gt;&lt;/div&gt;
+    &lt;div id="layout-align-self-baseline"&gt;&lt;/div&gt;
+    &lt;div id="layout-align-self-stretch"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        CoreUI.layout.create({
+            align: "stretch",
+            height: 100,
+            items: [
+                { "content": "Left" },
+                { "width": 200, "content": "Center", align: "start" },
+                { "width": 100, "content": "Right" },
+            ]
+        }).render('layout-align-self1');
+
+        CoreUI.layout.create({
+            align: "stretch",
+            height: 100,
+            items: [
+                { "content": "Left" },
+                { "width": 200, "content": "Center", align: "end" },
+                { "width": 100, "content": "Right" },
+            ]
+        }).render('layout-align-self2');
+
+        CoreUI.layout.create({
+            align: "stretch",
+            height: 100,
+            items: [
+                { "content": "Left" },
+                { "width": 200, "content": "Center", align: "center"},
+                { "width": 100, "content": "Right" },
+            ]
+        }).render('layout-align-self3');
+
+        CoreUI.layout.create({
+            align: "stretch",
+            height: 100,
+            items: [
+                { "content": "Left" },
+                { "width": 200, "content": "Center", align: "baseline" },
+                { "width": 100, "content": "Right" },
+            ]
+        }).render('layout-align-self4');
+
+        CoreUI.layout.create({
+            align: "stretch",
+            height: 100,
+            items: [
+                { "content": "Left" },
+                { "width": 200, "content": "Center", align: "stretch" },
+                { "width": 100, "content": "Right" },
+            ]
+        }).render('layout-align-self5');
+    &lt;/script&gt;
+                                </code></pre>
+                            </div>
+                        </div>
+                        <br><br>
+
+
+                        <h3 id="example-fill">Fill</h3>
+                        <div>
+                            <div class="content-example">
+                                <div id="layout-fill"></div>
+                            </div>
+                            <div class="content-markup">
+                                <pre><code class="html">
+    &lt;div id="layout-fill"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        CoreUI.layout.create({
+            items: [
+                { "width": 200, "content": "Left" },
+                { "content": "Center", fill: true},
+                { "width": 150, "content": "Right" },
+            ]
+        }).render('layout-fill');
+    &lt;/script&gt;
+                                </code></pre>
+                            </div>
+                        </div>
+                        <br><br>
+
+
+                        <h3 id="example-wrap">Wrap</h3>
+                        <div>
+                            <div class="content-example">
+                                <div id="layout-wrap-simple"></div><br>
+                                <div id="layout-nowrap"></div><br>
+                                <div id="layout-wrap"></div><br>
+                                <div id="layout-wrap-reverse"></div>
+                            </div>
+                            <div class="content-markup">
+                                <pre><code class="html">
+    &lt;div id="layout-wrap-simple"&gt;&lt;/div&gt;
+    &lt;div id="layout-nowrap"&gt;&lt;/div&gt;
+    &lt;div id="layout-wrap"&gt;&lt;/div&gt;
+    &lt;div id="layout-wrap-reverse"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        CoreUI.layout.create({
+            wrap: "wrap",
+            width: 250,
+            items: [
+                { "width": 200, "content": "Left" },
+                { "content": "Center"},
+                { "width": 150, "content": "Right" },
+            ]
+        }).render('layout-wrap-simple');
+
+        CoreUI.layout.create({
+            wrap: "nowrap",
+            width: 250,
+            items: [
+                { "content": "Flex item" },
+                { "content": "Flex item" },
+                { "content": "Flex item" },
+                { "content": "Flex item" },
+                { "content": "Flex item" },
+                { "content": "Flex item" },
+                { "content": "Flex item" },
+            ]
+        }).render('layout-nowrap');
+
+        CoreUI.layout.create({
+            wrap: "wrap",
+            items: [
+                { "content": "Flex item 1" },
+                { "content": "Flex item 2" },
+                { "content": "Flex item 3" },
+                { "content": "Flex item 4" },
+                { "content": "Flex item 5" },
+                { "content": "Flex item 6" },
+                { "content": "Flex item 7" },
+                { "content": "Flex item 8" },
+                { "content": "Flex item 9" },
+                { "content": "Flex item 10" },
+                { "content": "Flex item 11" },
+                { "content": "Flex item 12" },
+            ]
+        }).render('layout-wrap');
+
+        CoreUI.layout.create({
+            wrap: "wrap-reverse",
+            items: [
+                { "content": "Flex item 1" },
+                { "content": "Flex item 2" },
+                { "content": "Flex item 3" },
+                { "content": "Flex item 4" },
+                { "content": "Flex item 5" },
+                { "content": "Flex item 6" },
+                { "content": "Flex item 7" },
+                { "content": "Flex item 8" },
+                { "content": "Flex item 9" },
+                { "content": "Flex item 10" },
+                { "content": "Flex item 11" },
+                { "content": "Flex item 12" },
+            ]
+        }).render('layout-wrap-reverse');
+    &lt;/script&gt;
+                                </code></pre>
+                            </div>
+                        </div>
+                        <br><br>
+
+
+                        <h3 id="example-order">Order</h3>
+                        <div>
+                            <div class="content-example">
+                                <div id="layout-order1"></div><br>
+                                <div id="layout-order2"></div>
+                            </div>
+                            <div class="content-markup">
+                                <pre><code class="html">
+    &lt;div id="layout-order1"&gt;&lt;/div&gt;
+    &lt;div id="layout-order2"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        CoreUI.layout.create({
+            items: [
+                { order: 3, content: "First flex item" },
+                { order: 2, content: "Second flex item" },
+                { order: 1, content: "Third flex item" },
+            ]
+        }).render('layout-order1');
+
+        CoreUI.layout.create({
+            items: [
+                { order: 1, content: "Flex item 1" },
+                { order: 1, content: "Flex item 2" },
+                { order: 1, content: "Flex item 3" },
+                { order: 0, content: "Flex item 4" },
+                { order: 0, content: "Flex item 5" },
+                { order: 0, content: "Flex item 6" },
+                { order: 2, content: "Flex item 7" },
+                { order: 2, content: "Flex item 8" },
+                { order: 2, content: "Flex item 9" },
+                { order: 2, content: "Flex item 10" },
+            ]
+        }).render('layout-order2');
+    &lt;/script&gt;
+                                </code></pre>
+                            </div>
+                        </div>
+                        <br><br>
+
+
+                        <h3 id="example-sizes">Size options</h3>
+                        <div>
+                            <div class="content-example">
+                                <div id="layout-sizes1"></div><br>
+                                <div id="layout-sizes2"></div>
+                            </div>
+                            <div class="content-markup">
+                                <pre><code class="html">
+    &lt;div id="layout-sizes1"&gt;&lt;/div&gt;
+    &lt;div id="layout-sizes2"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        CoreUI.layout.create({
+            justify: "start",
+            align: "start",
+            direction: "row",
+            wrap: "wrap",
+            items: [
+                { "width": 200, "content": "Left" },
+                { "content": "Center" },
+                { "width": 150, "content": "Right" },
+            ],
+            sizes: {
+                sm: {},
+                md: {},
+                lg: {},
+                xl: {},
+                xxl: {
+                    direction: "column",
+                    justify: "between",
+                    align: "start",
+                    wrap: "nowrap",
+                },
+            }
+        }).render('layout-sizes1');
+
+        CoreUI.layout.create({
+            justify: "start",
+            align: "start",
+            direction: "row",
+            wrap: "wrap",
+            items: [
+                { order: 1, width: 200, content: "Left" },
+                { order: 1, content: "Center" },
+                {
+                    content: "Right",
+                    order: 0,
+                    width: 150,
+                    sizes: {
+                        sm: {},
+                        md: {},
+                        lg: {},
+                        xl: {},
+                        xxl: {
+                            align: "start",
+                            fill: true,
+                            order: 2
+                        },
+                    }
+                }
+            ]
+        }).render('layout-sizes2');
+    &lt;/script&gt;
+                                </code></pre>
+                            </div>
+                        </div>
+                        <br><br>
+
+
+                        <h3 id="example-overflow">Overflow</h3>
+                        <div>
+                            <div class="content-example">
+                                <div id="layout-overflow"></div>
+                            </div>
+                            <div class="content-markup">
+                                <pre><code class="html">
+    &lt;div id="layout-overflow"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        CoreUI.layout.create({
+            overflow: 'hidden',
+            height: 150,
+            items: [
+                { width: '25%', height: 95, overflow: 'auto',    content: "This is an example of using overflow auto on an element with set width and height dimensions. By design, this content will vertically scroll." },
+                { width: '25%', height: 95, overflow: 'hidden',  content: "This is an example of using overflow hidden on an element with set width and height dimensions." },
+                { width: '25%', height: 95, overflow: 'visible', content: "This is an example of using overflow visible on an element with set width and height dimensions." },
+                { width: '25%', height: 95, overflow: 'scroll',  content: "This is an example of using overflow scroll on an element with set width and height dimensions." },
+            ]
+        }).render('layout-overflow');
+    &lt;/script&gt;
+                                </code></pre>
+                            </div>
+                        </div>
+                        <br><br>
+
+
+                        <h3 id="example-all">All options</h3>
+                        <div>
+                            <div class="content-example">
+                                <div id="layout-all"></div>
+                            </div>
+                            <div class="content-markup">
+                                <pre><code class="html">
+    &lt;div id="layout-all"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        let layoutAll = CoreUI.layout.create({
+            id: "layout-all-id",
+            justify: "start", // start, end, center, between, around, evenly
+            align: "start", // start, end, center, baseline, stretch
+            direction: "row", // column, column-reverse, row, row-reverse
+            wrap: "wrap", // wrap, nowrap, wrap-reverse
+            overflow : "auto", // auto, hidden, visible, scroll
+            overflowX : "auto", // auto, hidden, visible, scroll
+            overflowY : "auto", // auto, hidden, visible, scroll
+            width: 500,
+            minWidth: 400,
+            maxWidth: 600,
+            height: 200,
+            minHeight: 100,
+            maxHeight: 300,
+            gap: 15,
+            items: [
+                { id: "id-sidebar", content: "Left",   align: "start" },
+                { id: "id-content", content: "Center", fill: true },
+                {
+                    id: "id-right_bar",
+                    align: "stretch",
+                    content: "Right",
+                    order: 0,  // 0 - 5
+                    overflow : "auto", // auto, hidden, visible, scroll
+                    overflowX : "auto", // auto, hidden, visible, scroll
+                    overflowY : "auto", // auto, hidden, visible, scroll
+                    sizes: {
+                        sm: {},
+                        md: {},
+                        lg: {},
+                        xl: {},
+                        xxl: {
+                            align: "end", // start, end, center, baseline, stretch
+                            fill: true,
+                            order: 2
+                        },
+                    }
+                },
+            ],
+            sizes: {
+                sm: {
+                    direction: "row", // column, column-reverse, row, row-reverse
+                    justify: "start", // start, end, center, between, around, evenly
+                    align: "start", // start, end, center, baseline, stretch
+                    wrap: "wrap", // wrap, nowrap, wrap-reverse
+                },
+                md: {},
+                lg: {},
+                xl: {},
+                xxl: {},
+            }
+        });
+
+        let layoutContent = layoutAll.render();
+        $('#layout-all').html(layoutContent);
+        layoutAll.initEvents();
+
+        layoutAll.setItemContent('id-sidebar', "Set Item Content");
+    &lt;/script&gt;
+                                </code></pre>
+                            </div>
+                        </div>
+                        <br><br>
+
+                    </div>
+
+
+                    <h2 id="options-layout" class="section-margin">Options layout</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped js-options-table">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>type</th>
+                                <th>default</th>
+                                <th>description</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <th>id</th> <td>string</td> <td><code>crc32b</code></td>
+                                <td>Идентификатор макета. По умолчанию равен уникальному значению</td>
+                            </tr>
+                            <tr>
+                                <th>justify</th> <td>string</td> <td><code>start</code></td>
+                                <td>Выравнивание flex-элементов в контейнере по оси X. <br>Возможные варианты: <code>start, end, center, between, around, evenly</code></td>
+                            </tr>
+                            <tr>
+                                <th>align</th> <td>string</td> <td><code>start</code></td>
+                                <td>Выравнивание flex-элементов в контейнере по оси Y. <br>Возможные варианты: <code>start, end, center, baseline, stretch</code></td>
+                            </tr>
+                            <tr>
+                                <th>direction</th> <td>string</td> <td><code>row</code></td>
+                                <td>Установка направления flex-элементов в контейнере. <br>Возможные варианты: <code>column, column-reverse, row, row-reverse</code></td>
+                            </tr>
+                            <tr>
+                                <th>wrap</th> <td>string</td> <td><code>wrap</code></td>
+                                <td>Установка способа переноса flex-элементов в контейнере. <br>Возможные варианты: <code>wrap, wrap-reverse, nowrap</code></td>
+                            </tr>
+                            <tr>
+                                <th>overflow</th> <td>string</td> <td><code>auto</code></td>
+                                <td>Установка способа переполнения элементов в контейнере. <br>Возможные варианты: <code>auto, hidden, visible, scroll</code></td>
+                            </tr>
+                            <tr>
+                                <th>overflowX</th> <td>string</td> <td><code>auto</code></td>
+                                <td>Установка способа переполнения элементов в контейнере по оси X. <br>Возможные варианты: <code>auto, hidden, visible, scroll</code></td>
+                            </tr>
+                            <tr>
+                                <th>overflowY</th> <td>string</td> <td><code>auto</code></td>
+                                <td>Установка способа переполнения элементов в контейнере по оси Y. <br>Возможные варианты: <code>auto, hidden, visible, scroll</code></td>
+                            </tr>
+                            <tr>
+                                <th>width</th> <td>string|number</td> <td></td>
+                                <td>Ширина контейнера в пикселях или других единицах</td>
+                            </tr>
+                            <tr>
+                                <th>minWidth</th> <td>string|number</td> <td></td>
+                                <td>Минимальная ширина контейнера в пикселях или других единицах</td>
+                            </tr>
+                            <tr>
+                                <th>maxWidth</th> <td>string|number</td> <td></td>
+                                <td>Максимальная ширина контейнера в пикселях или других единицах</td>
+                            </tr>
+                            <tr>
+                                <th>height</th> <td>string|number</td> <td></td>
+                                <td>Высота контейнера в пикселях или других единицах</td>
+                            </tr>
+                            <tr>
+                                <th>minHeight</th> <td>string|number</td> <td></td>
+                                <td>Минимальная высота контейнера в пикселях или других единицах</td>
+                            </tr>
+                            <tr>
+                                <th>maxHeight</th> <td>string|number</td> <td></td>
+                                <td>Максимальная высота контейнера в пикселях или других единицах</td>
+                            </tr>
+                            <tr>
+                                <th>gap</th> <td>string|number</td> <td></td>
+                                <td>Отступ между элементами в пикселях или других единицах</td>
+                            </tr>
+                            <tr>
+                                <th>items</th> <td>array</td> <td></td>
+                                <td>Список элементов наполняющих контейнер. Более подробное описание содержимого есть в разделе <code>Options layout item</code></td>
+                            </tr>
+                            <tr>
+                                <th>sizes</th> <td>object</td> <td></td>
+                                <td>
+                                    Перечень настроек для каждого отдельного размера экрана, которые перекрывают настройки по умолчанию. <br>
+                                    Возможные варианты размеров: <code>sm, md, lg, xl, xxl</code> <br>
+                                    Возможные варианты настроек: <code>direction, justify, align, wrap</code>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    <h2 id="options-layout-item" class="section-margin">Options layout item</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped js-options-table">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>type</th>
+                                <th>default</th>
+                                <th>description</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <th>id</th> <td>string</td> <td><code>crc32b</code></td>
+                                <td>Идентификатор элемента. По умолчанию равен уникальному значению</td>
+                            </tr>
+                            <tr>
+                                <th>content</th> <td>string|object</td> <td></td>
+                                <td>Содержимое внутри элемента. Может быть как текст, так и вложенный объект CoreUI</td>
+                            </tr>
+                            <tr>
+                                <th>align</th> <td>string</td> <td></td>
+                                <td>Выравнивание flex-элемента в контейнере по оси Y. <br>Возможные варианты: <code>start, end, center, baseline, stretch</code></td>
+                            </tr>
+                            <tr>
+                                <th>fill</th> <td>bool</td> <td></td>
+                                <td>Элемент с таким признаком будет занимать все доступное горизонтальное пространство</td>
+                            </tr>
+                            <tr>
+                                <th>order</th> <td>number</td> <td></td>
+                                <td>Установка визуального порядка для элемента. Возможные варианты: <code>0, 1, 2, 3, 4, 5</code></td>
+                            </tr>
+                            <tr>
+                                <th>overflow</th> <td>string</td> <td><code>auto</code></td>
+                                <td>Установка способа переполнения содержимого в элементе. <br>Возможные варианты: <code>auto, hidden, visible, scroll</code></td>
+                            </tr>
+                            <tr>
+                                <th>overflowX</th> <td>string</td> <td><code>auto</code></td>
+                                <td>Установка способа переполнения содержимого в элементе по оси X. <br>Возможные варианты: <code>auto, hidden, visible, scroll</code></td>
+                            </tr>
+                            <tr>
+                                <th>overflowY</th> <td>string</td> <td><code>auto</code></td>
+                                <td>Установка способа переполнения содержимого в элементе по оси Y. <br>Возможные варианты: <code>auto, hidden, visible, scroll</code></td>
+                            </tr>
+                            <tr>
+                                <th>width</th> <td>string|number</td> <td></td>
+                                <td>Ширина контейнера в пикселях или других единицах</td>
+                            </tr>
+                            <tr>
+                                <th>minWidth</th> <td>string|number</td> <td></td>
+                                <td>Минимальная ширина контейнера в пикселях или других единицах</td>
+                            </tr>
+                            <tr>
+                                <th>maxWidth</th> <td>string|number</td> <td></td>
+                                <td>Максимальная ширина контейнера в пикселях или других единицах</td>
+                            </tr>
+                            <tr>
+                                <th>height</th> <td>string|number</td> <td></td>
+                                <td>Высота контейнера в пикселях или других единицах</td>
+                            </tr>
+                            <tr>
+                                <th>minHeight</th> <td>string|number</td> <td></td>
+                                <td>Минимальная высота контейнера в пикселях или других единицах</td>
+                            </tr>
+                            <tr>
+                                <th>maxHeight</th> <td>string|number</td> <td></td>
+                                <td>Максимальная высота контейнера в пикселях или других единицах</td>
+                            </tr>
+                            <tr>
+                                <th>sizes</th> <td>object</td> <td></td>
+                                <td>
+                                    Перечень настроек для каждого отдельного размера экрана, которые перекрывают настройки по умолчанию. <br>
+                                    Возможные варианты размеров: <code>sm, md, lg, xl, xxl</code> <br>
+                                    Возможные варианты настроек: <code>align, fill, order</code>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    <h2 id="methods" class="section-margin">Methods</h2>
+                    <div>
+                        <code>let layout = CoreUI.layout.create( options )</code>
+                        <p>Метод для создания экземпляра макета</p>
+
+                        <code>let layout = CoreUI.layout.get( id )</code>
+                        <p>Получение ранее созданного экземпляра макета по его id</p>
+
+                        <code>layout.render( element )</code>
+                        <p>
+                            Формирование и размещение макета в указанном dom элементе или указанном id элемента.
+                            Если Элемент не указан, то сформированный html будет возвращен в ответе этого метода.
+                        </p>
+
+                        <code>layout.initEvents()</code>
+                        <p>
+                            Инициализация событий макета. Нужно выполнять после ручного добавления html макета на страницу
+                        </p>
+
+                        <code>layout.setItemContent(itemId, content)</code>
+                        <p>Установка содержимого внутри какого-либо элемента, указанного по id.</p>
+
+                        <code>layout.getId()</code>
+                        <p>
+                            Получение id у созданного экземпляра
+                        </p>
+
+                        <code>layout.on( eventName, function )</code>
+                        <p>Установка своего обработчика на какое-либо событие</p>
+                    </div>
+
+
+
+                    <h2 id="events" class="section-margin">Events</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped js-options-table">
+                            <thead>
+                            <tr>
+                                <th>Event Type</th>
+                                <th>Description</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>shown.coreui.layout</td>
+                                <td>Показ содержимого макета</td>
+                            </tr>
+                            <tr>
+                                <td>show-content.coreui.layout</td>
+                                <td>Установка содержимого в каком-либо элементе макета</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <br>
+                    <br>
+                </div>
+            </div>
+        </div>
+        <div class="buffer-content"></div>
+    </section>
+
+    <footer>
+        <section class="copyright">
+            <div class="container">
+                <span class="float-start">shabuninil24@gmail.com</span>
+                <span class="float-end">Code licensed under the GNU License</span>
+            </div>
+        </section>
+    </footer>
+</body>
+</html>
