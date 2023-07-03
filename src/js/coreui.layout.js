@@ -11,7 +11,7 @@ CoreUI.layout = {
      */
     create: function (options) {
 
-        let instance = $.extend({}, this.instance);
+        let instance = $.extend(true, {}, this.instance);
         instance._init(options instanceof Object ? options : {});
 
         let layoutId = instance.getId();
