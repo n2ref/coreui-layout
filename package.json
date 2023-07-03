@@ -1,6 +1,6 @@
 {
   "name": "coreui-layout",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "CoreUI layout",
   "scripts": {
     "build_all": "gulp build_js",

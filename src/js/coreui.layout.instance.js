@@ -445,6 +445,7 @@ CoreUI.layout.instance = {
             'coreui.layout',
             'coreui.tabs',
             'coreui.info',
+            'coreui.chart',
         ];
 
         if (typeof data === 'string') {
