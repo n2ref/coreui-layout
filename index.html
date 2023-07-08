@@ -593,11 +593,11 @@
     &lt;script&gt;
         let layoutAll = CoreUI.layout.create({
             id: "layout-all-id",
-            justify: "start", // start, end, center, between, around, evenly
-            align: "start", // start, end, center, baseline, stretch
-            direction: "row", // column, column-reverse, row, row-reverse
-            wrap: "wrap", // wrap, nowrap, wrap-reverse
-            overflow : "auto", // auto, hidden, visible, scroll
+            justify: "start",   // start, end, center, between, around, evenly
+            align: "start",     // start, end, center, baseline, stretch
+            direction: "row",   // column, column-reverse, row, row-reverse
+            wrap: "wrap",       // wrap, nowrap, wrap-reverse
+            overflow : "auto",  // auto, hidden, visible, scroll
             overflowX : "auto", // auto, hidden, visible, scroll
             overflowY : "auto", // auto, hidden, visible, scroll
             width: 500,
@@ -614,8 +614,8 @@
                     id: "id-right_bar",
                     align: "stretch",
                     content: "Right",
-                    order: 0,  // 0 - 5
-                    overflow : "auto", // auto, hidden, visible, scroll
+                    order: 0,           // 0 - 5
+                    overflow : "auto",  // auto, hidden, visible, scroll
                     overflowX : "auto", // auto, hidden, visible, scroll
                     overflowY : "auto", // auto, hidden, visible, scroll
                     sizes: {
@@ -624,9 +624,10 @@
                         lg: {},
                         xl: {},
                         xxl: {
-                            align: "end", // start, end, center, baseline, stretch
+                            align: "end",  // start, end, center, baseline, stretch
                             fill: true,
-                            order: 2
+                            order: 2,
+                            widthColumn: 0 // 1 - 12
                         },
                     }
                 },
@@ -635,8 +636,8 @@
                 sm: {
                     direction: "row", // column, column-reverse, row, row-reverse
                     justify: "start", // start, end, center, between, around, evenly
-                    align: "start", // start, end, center, baseline, stretch
-                    wrap: "wrap", // wrap, nowrap, wrap-reverse
+                    align: "start",   // start, end, center, baseline, stretch
+                    wrap: "wrap",     // wrap, nowrap, wrap-reverse
                 },
                 md: {},
                 lg: {},

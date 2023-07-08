@@ -325,9 +325,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     lg: {},
                     xl: {},
                     xxl: {
-                        align: "end", // start, end, center, baseline, stretch
+                        align: "end",  // start, end, center, baseline, stretch
                         fill: true,
-                        order: 2
+                        order: 2,
+                        widthColumn: 0 // 1 - 12
                     },
                 }
             },
