@@ -284,10 +284,10 @@ CoreUI.layout.instance = {
                 }
             }
 
-            if (item.column) {
+            if (item.widthColumn) {
                 issetColumns    = true;
                 issetItemColumn = true;
-                itemClasses.push('col-' + item.column);
+                itemClasses.push('col-' + item.widthColumn);
             }
 
 
@@ -305,10 +305,10 @@ CoreUI.layout.instance = {
                         itemClasses.push('flex-' + name + '-fill');
                     }
 
-                    if (size.column) {
+                    if (size.widthColumn) {
                         issetColumns    = true;
                         issetItemColumn = true;
-                        itemClasses.push('col-' + name + '-' + size.column);
+                        itemClasses.push('col-' + name + '-' + size.widthColumn);
                     }
 
                     if (typeof size.order === 'number') {
