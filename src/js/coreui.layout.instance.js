@@ -284,16 +284,14 @@ CoreUI.layout.instance = {
                 }
             }
 
+            if (item.column) {
+                issetColumns    = true;
+                issetItemColumn = true;
+                itemClasses.push('col-' + item.column);
+            }
+
 
             $.each(item.sizes, function (name, size) {
-                if (['xs', 'sm', 'md', 'lg', 'xl', 'xxl'].indexOf(name) >= 0) {
-                    if (size.col) {
-                        issetColumns    = true;
-                        issetItemColumn = true;
-                        itemClasses.push('col-' + name + '-' + size.col);
-                    }
-                }
-
                 if (['sm', 'md', 'lg', 'xl', 'xxl'].indexOf(name) >= 0) {
                     switch (size.align) {
                         case 'start' :    itemClasses.push('align-self-' + name + '-start'); break;
@@ -305,6 +303,12 @@ CoreUI.layout.instance = {
 
                     if (size.fill) {
                         itemClasses.push('flex-' + name + '-fill');
+                    }
+
+                    if (size.column) {
+                        issetColumns    = true;
+                        issetItemColumn = true;
+                        itemClasses.push('col-' + name + '-' + size.column);
                     }
 
                     if (typeof size.order === 'number') {
