@@ -227,7 +227,8 @@ CoreUI.layout.instance = {
             }
         });
 
-        let that = this;
+        let that         = this;
+        let issetColumns = false;
 
         $.each(this._options.items, function (key, item) {
 
@@ -294,7 +295,12 @@ CoreUI.layout.instance = {
                     }
 
                     if (size.fill) {
-                        itemClasses.push('flex-' + name + '-fill')
+                        itemClasses.push('flex-' + name + '-fill');
+                    }
+
+                    if (size.col) {
+                        issetColumns = true;
+                        itemClasses.push('col col-' + name + '-' + size.col);
                     }
 
                     if (typeof size.order === 'number') {
@@ -350,6 +356,10 @@ CoreUI.layout.instance = {
         });
 
 
+        if (issetColumns) {
+            containerClasses.push('row');
+        }
+
         let styles = containerStyles.length > 0 ? ' style="' + containerStyles.join(';') + '"' : '';
         let html   =
             '<div id="coreui-layout-' + this._options.id + '" ' +
@@ -402,6 +412,7 @@ CoreUI.layout.instance = {
 
 
     /**
+     * Выполнение события
      * @param name
      * @param context
      * @param params
