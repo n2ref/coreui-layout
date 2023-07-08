@@ -236,7 +236,8 @@ CoreUI.layout.instance = {
                 'coreui-layout-item',
                 'item-' + item.id
             ];
-            let itemStyles  = [];
+            let itemStyles      = [];
+            let issetItemColumn = false;
 
             switch (item.align) {
                 case 'start' :    itemClasses.push('align-self-start'); break;
@@ -285,6 +286,14 @@ CoreUI.layout.instance = {
 
 
             $.each(item.sizes, function (name, size) {
+                if (['xs', 'sm', 'md', 'lg', 'xl', 'xxl'].indexOf(name) >= 0) {
+                    if (size.col) {
+                        issetColumns    = true;
+                        issetItemColumn = true;
+                        itemClasses.push('col-' + name + '-' + size.col);
+                    }
+                }
+
                 if (['sm', 'md', 'lg', 'xl', 'xxl'].indexOf(name) >= 0) {
                     switch (size.align) {
                         case 'start' :    itemClasses.push('align-self-' + name + '-start'); break;
@@ -296,11 +305,6 @@ CoreUI.layout.instance = {
 
                     if (size.fill) {
                         itemClasses.push('flex-' + name + '-fill');
-                    }
-
-                    if (size.col) {
-                        issetColumns = true;
-                        itemClasses.push('col col-' + name + '-' + size.col);
                     }
 
                     if (typeof size.order === 'number') {
@@ -343,6 +347,10 @@ CoreUI.layout.instance = {
             if (item.maxHeight !== undefined) {
                 let unit = typeof item.maxHeight === 'number' ? 'px' : '';
                 itemStyles.push('max-height:' + item.maxHeight + unit)
+            }
+
+            if (issetItemColumn) {
+                itemClasses.push('col');
             }
 
             let content = that._renderContent(item.content);
