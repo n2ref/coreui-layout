@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shabuninil/coreui-layout.git"
+    "url": "git+https://github.com/n2ref/coreui-layout.git"
   },
   "keywords": [
     "js",
@@ -27,10 +27,10 @@
     "layout",
     "bootstrap"
   ],
-  "author": "shabuninil",
+  "author": "n2ref",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/shabuninil/coreui-layout/issues"
+    "url": "https://github.com/n2ref/coreui-layout/issues"
   },
-  "homepage": "https://github.com/shabuninil/coreui-layout#readme"
+  "homepage": "https://github.com/n2ref/coreui-layout#readme"
 }

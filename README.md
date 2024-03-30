@@ -1,6 +1,6 @@
 # CoreUI Layout
 
-**[DEMO](https://shabuninil.github.io/coreui-layout)**
+**[DEMO](https://n2ref.github.io/coreui-layout)**
 
 
 ### Install with NPM
@@ -33,4 +33,4 @@
 </script>
 ```
 
-![Preview](https://raw.githubusercontent.com/shabuninil/coreui-layout/master/preview.png) 
+![Preview](https://raw.githubusercontent.com/n2ref/coreui-layout/master/preview.png) 
