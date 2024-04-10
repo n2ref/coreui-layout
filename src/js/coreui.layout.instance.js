@@ -1,5 +1,7 @@
+import coreuiLayoutUtils   from "./coreui.layout.utils";
+import coreuiLayoutPrivate from "./coreui.layout.private";
 
-CoreUI.layout.instance = {
+let coreuiLayoutInstance = {
 
     _options: {
         id: '',
@@ -36,6 +38,8 @@ CoreUI.layout.instance = {
         naxHeight: null,
         sizes: {},
     },
+
+    _id: '',
     _events: {},
 
 
@@ -46,18 +50,22 @@ CoreUI.layout.instance = {
     _init: function (options) {
 
         this._options = $.extend(true, {}, this._options, options);
-
-        if ( ! this._options.id) {
-            this._options.id = CoreUI.layout._hashCode();
-        }
+        this._id      = this._options.hasOwnProperty('id') && typeof this._options.id === 'string' && this._options.id
+            ? this._options.id
+            : coreuiLayoutUtils.hashCode();
 
 
         let that = this;
 
         $.each(this._options.items, function (key, item) {
 
-            if ( ! item.id) {
-                that._options.items[key].id = CoreUI.layout._hashCode();
+            if (coreuiLayoutUtils.isObject(item)) {
+                if ( ! item.hasOwnProperty('id') ||
+                    typeof item.id !== 'string' ||
+                    ! item.id
+                ) {
+                    that._options.items[key].id = coreuiLayoutUtils.hashCode();
+                }
             }
         });
     },
@@ -68,7 +76,7 @@ CoreUI.layout.instance = {
      */
     initEvents: function () {
 
-        this._trigger('shown.coreui.layout');
+        coreuiLayoutPrivate.trigger(this, 'shown.coreui.layout');
     },
 
 
@@ -77,7 +85,7 @@ CoreUI.layout.instance = {
      * @returns {*}
      */
     getId: function () {
-        return this._options.id;
+        return this._id;
     },
 
 
@@ -87,11 +95,17 @@ CoreUI.layout.instance = {
      */
     setItemContent: function (itemId, content) {
 
-        let container = $('#coreui-layout-' + this._options.id + ' .item-' + itemId);
+        let container = $('#coreui-layout-' + this.getId() + ' .item-' + itemId);
 
         if (container[0]) {
-            container.html(this._renderContent(content));
-            this._trigger('show-content.coreui.layout', this, [itemId]);
+            let contents = coreuiLayoutPrivate.renderContent(this, content);
+            container.empty();
+
+            $.each(contents, function (key, content) {
+                container.append(content);
+            });
+
+            coreuiLayoutPrivate.trigger(this, 'show-content.coreui.layout', this, [itemId]);
         }
     },
 
@@ -357,14 +371,16 @@ CoreUI.layout.instance = {
                 itemClasses.push('col');
             }
 
-            let content = that._renderContent(item.content);
-            let styles  = itemStyles.length > 0 ? ' style="' + itemStyles.join(';') + '"' : '';
 
-            containerItems.push(
-                '<div class="' + itemClasses.join(' ') + '"' + styles + '>' +
-                    content +
-                '</div>'
-            );
+            let contents = coreuiLayoutPrivate.renderContent(that, item.content);
+            let styles   = itemStyles.length > 0 ? ' style="' + itemStyles.join(';') + '"' : '';
+
+            let itemContent = $('<div class="' + itemClasses.join(' ') + '"' + styles + '></div>');
+            $.each(contents, function (name, content) {
+                itemContent.append(content);
+            });
+
+            containerItems.push(itemContent);
         });
 
 
@@ -373,11 +389,14 @@ CoreUI.layout.instance = {
         }
 
         let styles = containerStyles.length > 0 ? ' style="' + containerStyles.join(';') + '"' : '';
-        let html   =
-            '<div id="coreui-layout-' + this._options.id + '" ' +
-                 'class="coreui-layout d-flex ' + containerClasses.join(' ') + '"' + styles + '>' +
-                containerItems.join('') +
-            '</div>';
+        let html   = $(
+            '<div id="coreui-layout-' + this.getId() + '" ' +
+                 'class="coreui-layout d-flex ' + containerClasses.join(' ') + '"' + styles + '></div>'
+        );
+
+        $.each(containerItems, function (name, containerItem) {
+            html.append(containerItem);
+        });
 
 
         if (element === undefined) {
@@ -399,7 +418,7 @@ CoreUI.layout.instance = {
         }
 
 
-        domElement.innerHTML = html;
+        $(domElement).html(html);
 
         this.initEvents();
     },
@@ -420,91 +439,7 @@ CoreUI.layout.instance = {
             callback: callback,
             singleExec: !! singleExec,
         });
-    },
-
-
-    /**
-     * Выполнение события
-     * @param name
-     * @param context
-     * @param params
-     * @private
-     */
-    _trigger: function(name, context, params) {
-
-        params = params || [];
-
-        if (this._events.hasOwnProperty(name) && this._events[name].length > 0) {
-            for (var i = 0; i < this._events[name].length; i++) {
-                let callback = this._events[name][i].callback;
-
-                context = this._events[name][i].context || context;
-
-                callback.apply(context, params);
-
-                if (this._events[name][i].singleExec) {
-                    this._events[name].splice(i, 1);
-                    i--;
-                }
-            }
-        }
-    },
-
-
-    /**
-     *
-     * @param data
-     * @returns {string}
-     * @private
-     */
-    _renderContent: function(data) {
-
-        let result          = [];
-        let alloyComponents = [
-            'coreui.table',
-            'coreui.form',
-            'coreui.panel',
-            'coreui.layout',
-            'coreui.tabs',
-            'coreui.info',
-            'coreui.chart',
-        ];
-
-        if (typeof data === 'string') {
-            result.push(data);
-
-        } else if (data instanceof Object) {
-            if ( ! Array.isArray(data)) {
-                data = [ data ];
-            }
-
-            for (let i = 0; i < data.length; i++) {
-                if (typeof data[i] === 'string') {
-                    result.push(data[i]);
-
-                } else {
-                    if ( ! Array.isArray(data[i]) &&
-                        data[i].hasOwnProperty('component') &&
-                        alloyComponents.indexOf(data[i].component) >= 0
-                    ) {
-                        let name = data[i].component.split('.')[1];
-
-                        if (CoreUI.hasOwnProperty(name)) {
-                            let instance = CoreUI[name].create(data[i]);
-                            result.push(instance.render());
-
-                            this.on('shown.coreui.layout', instance.initEvents, instance, true);
-                        } else {
-                            result.push(JSON.stringify(data[i]));
-                        }
-
-                    } else {
-                        result.push(JSON.stringify(data[i]));
-                    }
-                }
-            }
-        }
-
-        return result.join('');
     }
 }
+
+export default coreuiLayoutInstance;

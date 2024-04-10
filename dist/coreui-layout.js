@@ -1,583 +1,642 @@
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.CoreUI = global.CoreUI || {}, global.CoreUI.layout = factory()));
+})(this, (function () { 'use strict';
 
-var CoreUI = typeof CoreUI !== 'undefined' ? CoreUI : {};
+  function _typeof(o) {
+    "@babel/helpers - typeof";
 
-CoreUI.layout = {
+    return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+      return typeof o;
+    } : function (o) {
+      return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+    }, _typeof(o);
+  }
 
-    _instances: {},
-
+  var CoreuiLayoutUtils = {
     /**
-     * @param {object} options
-     * @returns {CoreUI.layout.instance}
+     * Проверка на объект
+     * @param value
      */
-    create: function (options) {
-
-        let instance = $.extend(true, {}, this.instance);
-        instance._init(options instanceof Object ? options : {});
-
-        let layoutId = instance.getId();
-        this._instances[layoutId] = instance;
-
-        return instance;
+    isObject: function isObject(value) {
+      return _typeof(value) === 'object' && !Array.isArray(value) && value !== null;
     },
-
-
-    /**
-     * @param {string} id
-     * @returns {CoreUI.layout.instance|null}
-     */
-    get: function (id) {
-
-        if ( ! this._instances.hasOwnProperty(id)) {
-            return null;
-        }
-
-        if ($('#coreui-layout-' + this._instances[id])[0]) {
-            delete this._instances[id];
-            return null;
-        }
-
-        return this._instances[id];
-    },
-
-
     /**
      * @returns {string}
      * @private
      */
-    _hashCode: function() {
-        return this._crc32((new Date().getTime() + Math.random()).toString()).toString(16);
+    hashCode: function hashCode() {
+      return this.crc32((new Date().getTime() + Math.random()).toString()).toString(16);
     },
-
-
     /**
+     * Hash crc32
      * @param str
      * @returns {number}
      * @private
      */
-    _crc32: function (str) {
-
-        for (var a, o = [], c = 0; c < 256; c++) {
-            a = c;
-            for (var f = 0; f < 8; f++) {
-                a = 1 & a ? 3988292384 ^ a >>> 1 : a >>> 1
-            }
-            o[c] = a
+    crc32: function crc32(str) {
+      for (var a, o = [], c = 0; c < 256; c++) {
+        a = c;
+        for (var f = 0; f < 8; f++) {
+          a = 1 & a ? 3988292384 ^ a >>> 1 : a >>> 1;
         }
-
-        for (var n = -1, t = 0; t < str.length; t++) {
-            n = n >>> 8 ^ o[255 & (n ^ str.charCodeAt(t))]
-        }
-
-        return (-1 ^ n) >>> 0;
+        o[c] = a;
+      }
+      for (var n = -1, t = 0; t < str.length; t++) {
+        n = n >>> 8 ^ o[255 & (n ^ str.charCodeAt(t))];
+      }
+      return (-1 ^ n) >>> 0;
     }
-};
+  };
 
-CoreUI.layout.instance = {
+  var CoreuiLayoutPrivate = {
+    /**
+     * Выполнение события
+     * @param {object} layout
+     * @param {string} name
+     * @param {object|null} context
+     * @param {Array} params
+     * @private
+     */
+    trigger: function trigger(layout, name, context, params) {
+      params = params || [];
+      if (layout._events.hasOwnProperty(name) && layout._events[name].length > 0) {
+        for (var i = 0; i < layout._events[name].length; i++) {
+          var callback = layout._events[name][i].callback;
+          context = layout._events[name][i].context || context;
+          callback.apply(context, params);
+          if (layout._events[name][i].singleExec) {
+            layout._events[name].splice(i, 1);
+            i--;
+          }
+        }
+      }
+    },
+    /**
+     * Формирование контента
+     * @param {object} layout
+     * @param {*}      data
+     * @returns {string}
+     * @private
+     */
+    renderContent: function renderContent(layout, data) {
+      var result = [];
+      if (typeof data === 'string') {
+        result.push(data);
+      } else if (data instanceof Object) {
+        if (!Array.isArray(data)) {
+          data = [data];
+        }
+        for (var i = 0; i < data.length; i++) {
+          if (typeof data[i] === 'string') {
+            result.push(data[i]);
+          } else if (!Array.isArray(data[i]) && data[i].hasOwnProperty('component') && data[i].component.substring(0, 6) === 'coreui') {
+            var name = data[i].component.split('.')[1];
+            if (CoreUI.hasOwnProperty(name)) {
+              var instance = CoreUI[name].create(data[i]);
+              result.push(instance.render());
+              layout.on('shown.coreui.layout', instance.initEvents, instance, true);
+            } else {
+              result.push(JSON.stringify(data[i]));
+            }
+          } else {
+            result.push(JSON.stringify(data[i]));
+          }
+        }
+      }
+      return result;
+    }
+  };
 
+  var coreuiLayoutInstance = {
     _options: {
-        id: '',
-        justify: "start", // start, end, center, between, around, evenly
-        align: "start", // start, end, center, baseline, stretch
-        direction: "row", // column, column-reverse, row, row-reverse
-        wrap: "wrap", // wrap, nowrap, reverse
-        overflow: null, // auto, hidden, visible, scroll
-        overflowX: null, // auto, hidden, visible, scroll
-        overflowY: null, // auto, hidden, visible, scroll
-        width: null,
-        minWidth: null,
-        maxWidth: null,
-        height: null,
-        minHeight: null,
-        naxHeight: null,
-        gap: null,
-        items: [],
-        sizes: {},
+      id: '',
+      justify: "start",
+      // start, end, center, between, around, evenly
+      align: "start",
+      // start, end, center, baseline, stretch
+      direction: "row",
+      // column, column-reverse, row, row-reverse
+      wrap: "wrap",
+      // wrap, nowrap, reverse
+      overflow: null,
+      // auto, hidden, visible, scroll
+      overflowX: null,
+      // auto, hidden, visible, scroll
+      overflowY: null,
+      // auto, hidden, visible, scroll
+      width: null,
+      minWidth: null,
+      maxWidth: null,
+      height: null,
+      minHeight: null,
+      naxHeight: null,
+      gap: null,
+      items: [],
+      sizes: {}
     },
     _item: {
-        id: '',
-        align: null, // start, end, center, baseline, stretch
-        order: null, // 0 - 5
-        fill: false,
-        overflow: null, // auto, hidden, visible, scroll
-        overflowX: null, // auto, hidden, visible, scroll
-        overflowY: null, // auto, hidden, visible, scroll
-        width: null,
-        minWidth: null,
-        maxWidth: null,
-        height: null,
-        minHeight: null,
-        naxHeight: null,
-        sizes: {},
+      id: '',
+      align: null,
+      // start, end, center, baseline, stretch
+      order: null,
+      // 0 - 5
+      fill: false,
+      overflow: null,
+      // auto, hidden, visible, scroll
+      overflowX: null,
+      // auto, hidden, visible, scroll
+      overflowY: null,
+      // auto, hidden, visible, scroll
+      width: null,
+      minWidth: null,
+      maxWidth: null,
+      height: null,
+      minHeight: null,
+      naxHeight: null,
+      sizes: {}
     },
+    _id: '',
     _events: {},
-
-
     /**
      * Инициализация
      * @param options
      */
-    _init: function (options) {
-
-        this._options = $.extend(true, {}, this._options, options);
-
-        if ( ! this._options.id) {
-            this._options.id = CoreUI.layout._hashCode();
+    _init: function _init(options) {
+      this._options = $.extend(true, {}, this._options, options);
+      this._id = this._options.hasOwnProperty('id') && typeof this._options.id === 'string' && this._options.id ? this._options.id : CoreuiLayoutUtils.hashCode();
+      var that = this;
+      $.each(this._options.items, function (key, item) {
+        if (CoreuiLayoutUtils.isObject(item)) {
+          if (!item.hasOwnProperty('id') || typeof item.id !== 'string' || !item.id) {
+            that._options.items[key].id = CoreuiLayoutUtils.hashCode();
+          }
         }
-
-
-        let that = this;
-
-        $.each(this._options.items, function (key, item) {
-
-            if ( ! item.id) {
-                that._options.items[key].id = CoreUI.layout._hashCode();
-            }
-        });
+      });
     },
-
-
     /**
      *
      */
-    initEvents: function () {
-
-        this._trigger('shown.coreui.layout');
+    initEvents: function initEvents() {
+      CoreuiLayoutPrivate.trigger(this, 'shown.coreui.layout');
     },
-
-
     /**
      *
      * @returns {*}
      */
-    getId: function () {
-        return this._options.id;
+    getId: function getId() {
+      return this._id;
     },
-
-
     /**
      * @param itemId
      * @param content
      */
-    setItemContent: function (itemId, content) {
-
-        let container = $('#coreui-layout-' + this._options.id + ' .item-' + itemId);
-
-        if (container[0]) {
-            container.html(this._renderContent(content));
-            this._trigger('show-content.coreui.layout', this, [itemId]);
-        }
+    setItemContent: function setItemContent(itemId, content) {
+      var container = $('#coreui-layout-' + this.getId() + ' .item-' + itemId);
+      if (container[0]) {
+        var contents = CoreuiLayoutPrivate.renderContent(this, content);
+        container.empty();
+        $.each(contents, function (key, content) {
+          container.append(content);
+        });
+        CoreuiLayoutPrivate.trigger(this, 'show-content.coreui.layout', this, [itemId]);
+      }
     },
-
-
     /**
      *
      * @param element
      * @returns {*}
      */
-    render: function(element) {
-
-        let containerClasses = [];
-        let containerStyles  = [];
-        let containerItems   = [];
-
-        switch (this._options.direction) {
-            case 'row' :            containerClasses.push('flex-row'); break;
-            case 'row-reverse' :    containerClasses.push('flex-row-reverse'); break;
-            case 'column' :         containerClasses.push('flex-column'); break;
-            case 'column-reverse' : containerClasses.push('flex-column-reverse'); break;
+    render: function render(element) {
+      var containerClasses = [];
+      var containerStyles = [];
+      var containerItems = [];
+      switch (this._options.direction) {
+        case 'row':
+          containerClasses.push('flex-row');
+          break;
+        case 'row-reverse':
+          containerClasses.push('flex-row-reverse');
+          break;
+        case 'column':
+          containerClasses.push('flex-column');
+          break;
+        case 'column-reverse':
+          containerClasses.push('flex-column-reverse');
+          break;
+      }
+      switch (this._options.justify) {
+        case 'start':
+          containerClasses.push('justify-content-start');
+          break;
+        case 'end':
+          containerClasses.push('justify-content-end');
+          break;
+        case 'center':
+          containerClasses.push('justify-content-center');
+          break;
+        case 'between':
+          containerClasses.push('justify-content-between');
+          break;
+        case 'around':
+          containerClasses.push('justify-content-around');
+          break;
+        case 'evenly':
+          containerClasses.push('justify-content-evenly');
+          break;
+      }
+      switch (this._options.align) {
+        case 'start':
+          containerClasses.push('align-items-start');
+          break;
+        case 'end':
+          containerClasses.push('align-items-end');
+          break;
+        case 'center':
+          containerClasses.push('align-items-center');
+          break;
+        case 'baseline':
+          containerClasses.push('align-items-baseline');
+          break;
+        case 'stretch':
+          containerClasses.push('align-items-stretch');
+          break;
+      }
+      switch (this._options.wrap) {
+        case 'wrap':
+          containerClasses.push('flex-wrap');
+          break;
+        case 'wrap-reverse':
+          containerClasses.push('flex-wrap-reverse');
+          break;
+        case 'nowrap':
+          containerClasses.push('flex-nowrap');
+          break;
+      }
+      switch (this._options.overflow) {
+        case 'auto':
+          containerClasses.push('overflow-auto');
+          break;
+        case 'hidden':
+          containerClasses.push('overflow-hidden');
+          break;
+        case 'visible':
+          containerClasses.push('overflow-visible');
+          break;
+        case 'scroll':
+          containerClasses.push('overflow-scroll');
+          break;
+      }
+      switch (this._options.overflowX) {
+        case 'auto':
+          containerClasses.push('overflow-x-auto');
+          break;
+        case 'hidden':
+          containerClasses.push('overflow-x-hidden');
+          break;
+        case 'visible':
+          containerClasses.push('overflow-x-visible');
+          break;
+        case 'scroll':
+          containerClasses.push('overflow-x-scroll');
+          break;
+      }
+      switch (this._options.overflowY) {
+        case 'auto':
+          containerClasses.push('overflow-y-auto');
+          break;
+        case 'hidden':
+          containerClasses.push('overflow-y-hidden');
+          break;
+        case 'visible':
+          containerClasses.push('overflow-y-visible');
+          break;
+        case 'scroll':
+          containerClasses.push('overflow-y-scroll');
+          break;
+      }
+      if (['number', 'string'].indexOf(_typeof(this._options.width)) >= 0) {
+        var unit = typeof this._options.width === 'number' ? 'px' : '';
+        containerStyles.push('width:' + this._options.width + unit);
+      }
+      if (['number', 'string'].indexOf(_typeof(this._options.minWidth)) >= 0) {
+        var _unit = typeof this._options.minWidth === 'number' ? 'px' : '';
+        containerStyles.push('min-width:' + this._options.minWidth + _unit);
+      }
+      if (['number', 'string'].indexOf(_typeof(this._options.maxWidth)) >= 0) {
+        var _unit2 = typeof this._options.maxWidth === 'number' ? 'px' : '';
+        containerStyles.push('max-width:' + this._options.maxWidth + _unit2);
+      }
+      if (['number', 'string'].indexOf(_typeof(this._options.height)) >= 0) {
+        var _unit3 = typeof this._options.height === 'number' ? 'px' : '';
+        containerStyles.push('height:' + this._options.height + _unit3);
+      }
+      if (['number', 'string'].indexOf(_typeof(this._options.minHeight)) >= 0) {
+        var _unit4 = typeof this._options.minHeight === 'number' ? 'px' : '';
+        containerStyles.push('min-height:' + this._options.minHeight + _unit4);
+      }
+      if (['number', 'string'].indexOf(_typeof(this._options.maxHeight)) >= 0) {
+        var _unit5 = typeof this._options.maxHeight === 'number' ? 'px' : '';
+        containerStyles.push('max-height:' + this._options.maxHeight + _unit5);
+      }
+      if (['number', 'string'].indexOf(_typeof(this._options.gap)) >= 0) {
+        var _unit6 = typeof this._options.gap === 'number' ? 'px' : '';
+        containerStyles.push('gap:' + this._options.gap + _unit6);
+      }
+      $.each(this._options.sizes, function (name, size) {
+        if (['sm', 'md', 'lg', 'xl', 'xxl'].indexOf(name) >= 0) {
+          switch (size.direction) {
+            case 'row':
+              containerClasses.push('flex-' + name + '-row');
+              break;
+            case 'row-reverse':
+              containerClasses.push('flex-' + name + '-row-reverse');
+              break;
+            case 'column':
+              containerClasses.push('flex-' + name + '-column');
+              break;
+            case 'column-reverse':
+              containerClasses.push('flex-' + name + '-column-reverse');
+              break;
+          }
+          switch (size.justify) {
+            case 'start':
+              containerClasses.push('justify-content-' + name + '-start');
+              break;
+            case 'end':
+              containerClasses.push('justify-content-' + name + '-end');
+              break;
+            case 'center':
+              containerClasses.push('justify-content-' + name + '-center');
+              break;
+            case 'between':
+              containerClasses.push('justify-content-' + name + '-between');
+              break;
+            case 'around':
+              containerClasses.push('justify-content-' + name + '-around');
+              break;
+            case 'evenly':
+              containerClasses.push('justify-content-' + name + '-evenly');
+              break;
+          }
+          switch (size.align) {
+            case 'start':
+              containerClasses.push('align-items-' + name + '-start');
+              break;
+            case 'end':
+              containerClasses.push('align-items-' + name + '-end');
+              break;
+            case 'center':
+              containerClasses.push('align-items-' + name + '-center');
+              break;
+            case 'baseline':
+              containerClasses.push('align-items-' + name + '-baseline');
+              break;
+            case 'stretch':
+              containerClasses.push('align-items-' + name + '-stretch');
+              break;
+          }
+          switch (size.wrap) {
+            case 'wrap':
+              containerClasses.push('flex-' + name + '-wrap');
+              break;
+            case 'wrap-reverse':
+              containerClasses.push('flex-' + name + '-wrap-reverse');
+              break;
+            case 'nowrap':
+              containerClasses.push('flex-' + name + '-nowrap');
+              break;
+          }
         }
-
-        switch (this._options.justify) {
-            case 'start' :   containerClasses.push('justify-content-start'); break;
-            case 'end' :     containerClasses.push('justify-content-end'); break;
-            case 'center' :  containerClasses.push('justify-content-center'); break;
-            case 'between' : containerClasses.push('justify-content-between'); break;
-            case 'around' :  containerClasses.push('justify-content-around'); break;
-            case 'evenly' :  containerClasses.push('justify-content-evenly'); break;
+      });
+      var that = this;
+      var issetColumns = false;
+      $.each(this._options.items, function (key, item) {
+        var itemClasses = ['coreui-layout-item', 'item-' + item.id];
+        var itemStyles = [];
+        var issetItemColumn = false;
+        switch (item.align) {
+          case 'start':
+            itemClasses.push('align-self-start');
+            break;
+          case 'end':
+            itemClasses.push('align-self-end');
+            break;
+          case 'center':
+            itemClasses.push('align-self-center');
+            break;
+          case 'baseline':
+            itemClasses.push('align-self-baseline');
+            break;
+          case 'stretch':
+            itemClasses.push('align-self-stretch');
+            break;
         }
-
-        switch (this._options.align) {
-            case 'start' :    containerClasses.push('align-items-start'); break;
-            case 'end' :      containerClasses.push('align-items-end'); break;
-            case 'center' :   containerClasses.push('align-items-center'); break;
-            case 'baseline' : containerClasses.push('align-items-baseline'); break;
-            case 'stretch' :  containerClasses.push('align-items-stretch'); break;
+        switch (item.overflow) {
+          case 'auto':
+            itemClasses.push('overflow-auto');
+            break;
+          case 'hidden':
+            itemClasses.push('overflow-hidden');
+            break;
+          case 'visible':
+            itemClasses.push('overflow-visible');
+            break;
+          case 'scroll':
+            itemClasses.push('overflow-scroll');
+            break;
         }
-
-        switch (this._options.wrap) {
-            case 'wrap' :         containerClasses.push('flex-wrap'); break;
-            case 'wrap-reverse' : containerClasses.push('flex-wrap-reverse'); break;
-            case 'nowrap' :       containerClasses.push('flex-nowrap'); break;
+        switch (item.overflowX) {
+          case 'auto':
+            itemClasses.push('overflow-x-auto');
+            break;
+          case 'hidden':
+            itemClasses.push('overflow-x-hidden');
+            break;
+          case 'visible':
+            itemClasses.push('overflow-x-visible');
+            break;
+          case 'scroll':
+            itemClasses.push('overflow-x-scroll');
+            break;
         }
-
-        switch (this._options.overflow) {
-            case 'auto' :    containerClasses.push('overflow-auto'); break;
-            case 'hidden' :  containerClasses.push('overflow-hidden'); break;
-            case 'visible' : containerClasses.push('overflow-visible'); break;
-            case 'scroll' :  containerClasses.push('overflow-scroll'); break;
+        switch (item.overflowY) {
+          case 'auto':
+            itemClasses.push('overflow-y-auto');
+            break;
+          case 'hidden':
+            itemClasses.push('overflow-y-hidden');
+            break;
+          case 'visible':
+            itemClasses.push('overflow-y-visible');
+            break;
+          case 'scroll':
+            itemClasses.push('overflow-y-scroll');
+            break;
         }
-
-        switch (this._options.overflowX) {
-            case 'auto' :    containerClasses.push('overflow-x-auto'); break;
-            case 'hidden' :  containerClasses.push('overflow-x-hidden'); break;
-            case 'visible' : containerClasses.push('overflow-x-visible'); break;
-            case 'scroll' :  containerClasses.push('overflow-x-scroll'); break;
+        if (item.fill) {
+          itemClasses.push('flex-fill');
         }
-
-        switch (this._options.overflowY) {
-            case 'auto' :    containerClasses.push('overflow-y-auto'); break;
-            case 'hidden' :  containerClasses.push('overflow-y-hidden'); break;
-            case 'visible' : containerClasses.push('overflow-y-visible'); break;
-            case 'scroll' :  containerClasses.push('overflow-y-scroll'); break;
+        if (typeof item.order === 'number') {
+          if (item.order < 0) {
+            itemClasses.push('order-0');
+          } else if (item.order > 5) {
+            itemClasses.push('order-5');
+          } else {
+            itemClasses.push('order-' + item.order);
+          }
         }
-
-
-
-        if (['number', 'string'].indexOf(typeof this._options.width) >= 0) {
-            let unit = typeof this._options.width === 'number' ? 'px' : '';
-            containerStyles.push('width:' + this._options.width + unit)
+        if (item.widthColumn) {
+          issetColumns = true;
+          issetItemColumn = true;
+          itemClasses.push('col-' + item.widthColumn);
         }
-        if (['number', 'string'].indexOf(typeof this._options.minWidth) >= 0) {
-            let unit = typeof this._options.minWidth === 'number' ? 'px' : '';
-            containerStyles.push('min-width:' + this._options.minWidth + unit)
-        }
-        if (['number', 'string'].indexOf(typeof this._options.maxWidth) >= 0) {
-            let unit = typeof this._options.maxWidth === 'number' ? 'px' : '';
-            containerStyles.push('max-width:' + this._options.maxWidth + unit)
-        }
-
-        if (['number', 'string'].indexOf(typeof this._options.height) >= 0) {
-            let unit = typeof this._options.height === 'number' ? 'px' : '';
-            containerStyles.push('height:' + this._options.height + unit)
-        }
-        if (['number', 'string'].indexOf(typeof this._options.minHeight) >= 0) {
-            let unit = typeof this._options.minHeight === 'number' ? 'px' : '';
-            containerStyles.push('min-height:' + this._options.minHeight + unit)
-        }
-
-        if (['number', 'string'].indexOf(typeof this._options.maxHeight) >= 0) {
-            let unit = typeof this._options.maxHeight === 'number' ? 'px' : '';
-            containerStyles.push('max-height:' + this._options.maxHeight + unit)
-        }
-
-        if (['number', 'string'].indexOf(typeof this._options.gap) >= 0) {
-            let unit = typeof this._options.gap === 'number' ? 'px' : '';
-            containerStyles.push('gap:' + this._options.gap + unit)
-        }
-
-        $.each(this._options.sizes, function (name, size) {
-            if (['sm', 'md', 'lg', 'xl', 'xxl'].indexOf(name) >= 0) {
-
-                switch (size.direction) {
-                    case 'row' :            containerClasses.push('flex-' + name + '-row'); break;
-                    case 'row-reverse' :    containerClasses.push('flex-' + name + '-row-reverse'); break;
-                    case 'column' :         containerClasses.push('flex-' + name + '-column'); break;
-                    case 'column-reverse' : containerClasses.push('flex-' + name + '-column-reverse'); break;
-                }
-
-                switch (size.justify) {
-                    case 'start' :   containerClasses.push('justify-content-' + name + '-start'); break;
-                    case 'end' :     containerClasses.push('justify-content-' + name + '-end'); break;
-                    case 'center' :  containerClasses.push('justify-content-' + name + '-center'); break;
-                    case 'between' : containerClasses.push('justify-content-' + name + '-between'); break;
-                    case 'around' :  containerClasses.push('justify-content-' + name + '-around'); break;
-                    case 'evenly' :  containerClasses.push('justify-content-' + name + '-evenly'); break;
-                }
-
-                switch (size.align) {
-                    case 'start' :    containerClasses.push('align-items-' + name + '-start'); break;
-                    case 'end' :      containerClasses.push('align-items-' + name + '-end'); break;
-                    case 'center' :   containerClasses.push('align-items-' + name + '-center'); break;
-                    case 'baseline' : containerClasses.push('align-items-' + name + '-baseline'); break;
-                    case 'stretch' :  containerClasses.push('align-items-' + name + '-stretch'); break;
-                }
-
-                switch (size.wrap) {
-                    case 'wrap' :         containerClasses.push('flex-' + name + '-wrap'); break;
-                    case 'wrap-reverse' : containerClasses.push('flex-' + name + '-wrap-reverse'); break;
-                    case 'nowrap' :       containerClasses.push('flex-' + name + '-nowrap'); break;
-                }
+        $.each(item.sizes, function (name, size) {
+          if (['sm', 'md', 'lg', 'xl', 'xxl'].indexOf(name) >= 0) {
+            switch (size.align) {
+              case 'start':
+                itemClasses.push('align-self-' + name + '-start');
+                break;
+              case 'end':
+                itemClasses.push('align-self-' + name + '-end');
+                break;
+              case 'center':
+                itemClasses.push('align-self-' + name + '-center');
+                break;
+              case 'baseline':
+                itemClasses.push('align-self-' + name + '-baseline');
+                break;
+              case 'stretch':
+                itemClasses.push('align-self-' + name + '-stretch');
+                break;
             }
+            if (size.fill) {
+              itemClasses.push('flex-' + name + '-fill');
+            }
+            if (size.widthColumn) {
+              issetColumns = true;
+              issetItemColumn = true;
+              itemClasses.push('col-' + name + '-' + size.widthColumn);
+            }
+            if (typeof size.order === 'number') {
+              if (size.order < 0) {
+                itemClasses.push('order-' + name + '-0');
+              } else if (size.order > 5) {
+                itemClasses.push('order-' + name + '-5');
+              } else {
+                itemClasses.push('order-' + name + '-' + size.order);
+              }
+            }
+          }
         });
-
-        let that         = this;
-        let issetColumns = false;
-
-        $.each(this._options.items, function (key, item) {
-
-            let itemClasses = [
-                'coreui-layout-item',
-                'item-' + item.id
-            ];
-            let itemStyles      = [];
-            let issetItemColumn = false;
-
-            switch (item.align) {
-                case 'start' :    itemClasses.push('align-self-start'); break;
-                case 'end' :      itemClasses.push('align-self-end'); break;
-                case 'center' :   itemClasses.push('align-self-center'); break;
-                case 'baseline' : itemClasses.push('align-self-baseline'); break;
-                case 'stretch' :  itemClasses.push('align-self-stretch'); break;
-            }
-
-            switch (item.overflow) {
-                case 'auto' :    itemClasses.push('overflow-auto'); break;
-                case 'hidden' :  itemClasses.push('overflow-hidden'); break;
-                case 'visible' : itemClasses.push('overflow-visible'); break;
-                case 'scroll' :  itemClasses.push('overflow-scroll'); break;
-            }
-
-            switch (item.overflowX) {
-                case 'auto' :    itemClasses.push('overflow-x-auto'); break;
-                case 'hidden' :  itemClasses.push('overflow-x-hidden'); break;
-                case 'visible' : itemClasses.push('overflow-x-visible'); break;
-                case 'scroll' :  itemClasses.push('overflow-x-scroll'); break;
-            }
-
-            switch (item.overflowY) {
-                case 'auto' :    itemClasses.push('overflow-y-auto'); break;
-                case 'hidden' :  itemClasses.push('overflow-y-hidden'); break;
-                case 'visible' : itemClasses.push('overflow-y-visible'); break;
-                case 'scroll' :  itemClasses.push('overflow-y-scroll'); break;
-            }
-
-            if (item.fill) {
-                itemClasses.push('flex-fill')
-            }
-
-            if (typeof item.order === 'number') {
-                if (item.order < 0) {
-                    itemClasses.push('order-0')
-
-                } else if (item.order > 5) {
-                    itemClasses.push('order-5')
-
-                } else {
-                    itemClasses.push('order-' + item.order)
-                }
-            }
-
-            if (item.widthColumn) {
-                issetColumns    = true;
-                issetItemColumn = true;
-                itemClasses.push('col-' + item.widthColumn);
-            }
-
-
-            $.each(item.sizes, function (name, size) {
-                if (['sm', 'md', 'lg', 'xl', 'xxl'].indexOf(name) >= 0) {
-                    switch (size.align) {
-                        case 'start' :    itemClasses.push('align-self-' + name + '-start'); break;
-                        case 'end' :      itemClasses.push('align-self-' + name + '-end'); break;
-                        case 'center' :   itemClasses.push('align-self-' + name + '-center'); break;
-                        case 'baseline' : itemClasses.push('align-self-' + name + '-baseline'); break;
-                        case 'stretch' :  itemClasses.push('align-self-' + name + '-stretch'); break;
-                    }
-
-                    if (size.fill) {
-                        itemClasses.push('flex-' + name + '-fill');
-                    }
-
-                    if (size.widthColumn) {
-                        issetColumns    = true;
-                        issetItemColumn = true;
-                        itemClasses.push('col-' + name + '-' + size.widthColumn);
-                    }
-
-                    if (typeof size.order === 'number') {
-                        if (size.order < 0) {
-                            itemClasses.push('order-' + name + '-0')
-
-                        } else if (size.order > 5) {
-                            itemClasses.push('order-' + name + '-5')
-
-                        } else {
-                            itemClasses.push('order-' + name + '-' + size.order)
-                        }
-                    }
-                }
-            });
-
-
-
-            if (item.width !== undefined) {
-                let unit = typeof item.width === 'number' ? 'px' : '';
-                itemStyles.push('width:' + item.width + unit)
-            }
-            if (item.minWidth !== undefined) {
-                let unit = typeof item.minWidth === 'number' ? 'px' : '';
-                itemStyles.push('min-width:' + item.minWidth + unit)
-            }
-            if (item.maxWidth !== undefined) {
-                let unit = typeof item.maxWidth === 'number' ? 'px' : '';
-                itemStyles.push('max-width:' + item.maxWidth + unit)
-            }
-
-            if (item.height !== undefined) {
-                let unit = typeof item.height === 'number' ? 'px' : '';
-                itemStyles.push('height:' + item.height + unit)
-            }
-            if (item.minHeight ) {
-                let unit = typeof item.minHeight === 'number' ? 'px' : '';
-                itemStyles.push('min-height:' + item.minHeight + unit)
-            }
-            if (item.maxHeight !== undefined) {
-                let unit = typeof item.maxHeight === 'number' ? 'px' : '';
-                itemStyles.push('max-height:' + item.maxHeight + unit)
-            }
-
-            if (issetItemColumn) {
-                itemClasses.push('col');
-            }
-
-            let content = that._renderContent(item.content);
-            let styles  = itemStyles.length > 0 ? ' style="' + itemStyles.join(';') + '"' : '';
-
-            containerItems.push(
-                '<div class="' + itemClasses.join(' ') + '"' + styles + '>' +
-                    content +
-                '</div>'
-            );
+        if (item.width !== undefined) {
+          var _unit7 = typeof item.width === 'number' ? 'px' : '';
+          itemStyles.push('width:' + item.width + _unit7);
+        }
+        if (item.minWidth !== undefined) {
+          var _unit8 = typeof item.minWidth === 'number' ? 'px' : '';
+          itemStyles.push('min-width:' + item.minWidth + _unit8);
+        }
+        if (item.maxWidth !== undefined) {
+          var _unit9 = typeof item.maxWidth === 'number' ? 'px' : '';
+          itemStyles.push('max-width:' + item.maxWidth + _unit9);
+        }
+        if (item.height !== undefined) {
+          var _unit10 = typeof item.height === 'number' ? 'px' : '';
+          itemStyles.push('height:' + item.height + _unit10);
+        }
+        if (item.minHeight) {
+          var _unit11 = typeof item.minHeight === 'number' ? 'px' : '';
+          itemStyles.push('min-height:' + item.minHeight + _unit11);
+        }
+        if (item.maxHeight !== undefined) {
+          var _unit12 = typeof item.maxHeight === 'number' ? 'px' : '';
+          itemStyles.push('max-height:' + item.maxHeight + _unit12);
+        }
+        if (issetItemColumn) {
+          itemClasses.push('col');
+        }
+        var contents = CoreuiLayoutPrivate.renderContent(that, item.content);
+        var styles = itemStyles.length > 0 ? ' style="' + itemStyles.join(';') + '"' : '';
+        var itemContent = $('<div class="' + itemClasses.join(' ') + '"' + styles + '></div>');
+        $.each(contents, function (name, content) {
+          itemContent.append(content);
         });
+        containerItems.push(itemContent);
+      });
+      if (issetColumns) {
+        containerClasses.push('row');
+      }
+      var styles = containerStyles.length > 0 ? ' style="' + containerStyles.join(';') + '"' : '';
+      var html = $('<div id="coreui-layout-' + this.getId() + '" ' + 'class="coreui-layout d-flex ' + containerClasses.join(' ') + '"' + styles + '></div>');
+      $.each(containerItems, function (name, containerItem) {
+        html.append(containerItem);
+      });
+      if (element === undefined) {
+        return html;
+      }
 
-
-        if (issetColumns) {
-            containerClasses.push('row');
+      // Dom element
+      var domElement = {};
+      if (typeof element === 'string') {
+        domElement = document.getElementById(element);
+        if (!domElement) {
+          return '';
         }
-
-        let styles = containerStyles.length > 0 ? ' style="' + containerStyles.join(';') + '"' : '';
-        let html   =
-            '<div id="coreui-layout-' + this._options.id + '" ' +
-                 'class="coreui-layout d-flex ' + containerClasses.join(' ') + '"' + styles + '>' +
-                containerItems.join('') +
-            '</div>';
-
-
-        if (element === undefined) {
-            return html;
-        }
-
-        // Dom element
-        let domElement = {};
-
-        if (typeof element === 'string') {
-            domElement = document.getElementById(element);
-
-            if ( ! domElement) {
-                return '';
-            }
-
-        } else if (element instanceof HTMLElement) {
-            domElement = element;
-        }
-
-
-        domElement.innerHTML = html;
-
-        this.initEvents();
+      } else if (element instanceof HTMLElement) {
+        domElement = element;
+      }
+      $(domElement).html(html);
+      this.initEvents();
     },
-
-
     /**
      * @param eventName
      * @param callback
      * @param context
      * @param singleExec
      */
-    on: function(eventName, callback, context, singleExec) {
-        if (typeof this._events[eventName] !== 'object') {
-            this._events[eventName] = [];
-        }
-        this._events[eventName].push({
-            context : context || this,
-            callback: callback,
-            singleExec: !! singleExec,
-        });
-    },
-
-
-    /**
-     * Выполнение события
-     * @param name
-     * @param context
-     * @param params
-     * @private
-     */
-    _trigger: function(name, context, params) {
-
-        params = params || [];
-
-        if (this._events.hasOwnProperty(name) && this._events[name].length > 0) {
-            for (var i = 0; i < this._events[name].length; i++) {
-                let callback = this._events[name][i].callback;
-
-                context = this._events[name][i].context || context;
-
-                callback.apply(context, params);
-
-                if (this._events[name][i].singleExec) {
-                    this._events[name].splice(i, 1);
-                    i--;
-                }
-            }
-        }
-    },
-
-
-    /**
-     *
-     * @param data
-     * @returns {string}
-     * @private
-     */
-    _renderContent: function(data) {
-
-        let result          = [];
-        let alloyComponents = [
-            'coreui.table',
-            'coreui.form',
-            'coreui.panel',
-            'coreui.layout',
-            'coreui.tabs',
-            'coreui.info',
-            'coreui.chart',
-        ];
-
-        if (typeof data === 'string') {
-            result.push(data);
-
-        } else if (data instanceof Object) {
-            if ( ! Array.isArray(data)) {
-                data = [ data ];
-            }
-
-            for (let i = 0; i < data.length; i++) {
-                if (typeof data[i] === 'string') {
-                    result.push(data[i]);
-
-                } else {
-                    if ( ! Array.isArray(data[i]) &&
-                        data[i].hasOwnProperty('component') &&
-                        alloyComponents.indexOf(data[i].component) >= 0
-                    ) {
-                        let name = data[i].component.split('.')[1];
-
-                        if (CoreUI.hasOwnProperty(name)) {
-                            let instance = CoreUI[name].create(data[i]);
-                            result.push(instance.render());
-
-                            this.on('shown.coreui.layout', instance.initEvents, instance, true);
-                        } else {
-                            result.push(JSON.stringify(data[i]));
-                        }
-
-                    } else {
-                        result.push(JSON.stringify(data[i]));
-                    }
-                }
-            }
-        }
-
-        return result.join('');
+    on: function on(eventName, callback, context, singleExec) {
+      if (_typeof(this._events[eventName]) !== 'object') {
+        this._events[eventName] = [];
+      }
+      this._events[eventName].push({
+        context: context || this,
+        callback: callback,
+        singleExec: !!singleExec
+      });
     }
-}
+  };
+
+  var coreuiLayout = {
+    _instances: {},
+    /**
+     * @param {object} options
+     * @returns {object}
+     */
+    create: function create(options) {
+      var instance = $.extend(true, {}, coreuiLayoutInstance);
+      instance._init(CoreuiLayoutUtils.isObject(options) ? options : {});
+      var layoutId = instance.getId();
+      this._instances[layoutId] = instance;
+      return instance;
+    },
+    /**
+     * @param {string} id
+     * @returns {object|null}
+     */
+    get: function get(id) {
+      if (!this._instances.hasOwnProperty(id)) {
+        return null;
+      }
+      if (!$('#coreui-layout-' + this._instances[id])[0]) {
+        delete this._instances[id];
+        return null;
+      }
+      return this._instances[id];
+    }
+  };
+
+  return coreuiLayout;
+
+}));

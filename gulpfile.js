@@ -1,8 +1,13 @@
-const gulp       = require('gulp');
-const concat     = require('gulp-concat');
-const sourcemaps = require('gulp-sourcemaps');
-const uglify     = require('gulp-uglify');
-
+const gulp             = require('gulp');
+const concat           = require('gulp-concat');
+const sourcemaps       = require('gulp-sourcemaps');
+const uglify           = require('gulp-uglify');
+const sass             = require('gulp-sass')(require('sass'));
+const rollup           = require('@rollup/stream');
+const rollupSourcemaps = require('rollup-plugin-sourcemaps');
+const rollupBabel      = require('@rollup/plugin-babel');
+const source           = require('vinyl-source-stream');
+const buffer           = require("vinyl-buffer");
 
 
 var conf = {
@@ -10,35 +15,84 @@ var conf = {
     js: {
         fileMin: 'coreui-layout.min.js',
         file: 'coreui-layout.js',
-        src: [
-            'src/js/coreui.layout.js',
-            'src/js/coreui.layout.instance.js',
-        ]
+        main: 'src/js/main.js',
+        src: 'src/js/**/*.js'
+    },
+    css_bootstrap: {
+        fileMin: 'coreui.layout.bootstrap.min.css',
+        main: 'src/css/coreui.layout.bootstrap.scss',
     }
 };
 
 
 
-gulp.task('build_js_min', function() {
-    return gulp.src(conf.js.src)
-        .pipe(sourcemaps.init())
-        .pipe(uglify())
-        .pipe(concat(conf.js.fileMin, {newLine: ";\n"}))
-        .pipe(sourcemaps.write('.'))
+gulp.task('build_js', function() {
+    return rollup({
+        input: conf.js.main,
+        output: {
+            sourcemap: false,
+            format: 'umd',
+            name: "CoreUI.layout"
+        },
+        context: "window",
+        plugins: [
+            rollupBabel({babelHelpers: 'bundled'}),
+        ]
+    })
+        .pipe(source(conf.js.file))
+        .pipe(buffer())
         .pipe(gulp.dest(conf.dist));
 });
 
 gulp.task('build_js_min_fast', function() {
-    return gulp.src(conf.js.src)
+    return rollup({
+        input: conf.js.main,
+        output: {
+            sourcemap: false,
+            format: 'umd',
+            name: "CoreUI.layout"
+        },
+        context: "window",
+        plugins: [
+            rollupSourcemaps(),
+            rollupBabel({babelHelpers: 'bundled'}),
+        ]
+    })
+        .pipe(source(conf.js.fileMin))
+        .pipe(buffer())
+        .pipe(gulp.dest(conf.dist));
+});
+
+
+gulp.task('build_js_min', function() {
+    return rollup({
+        input: conf.js.main,
+        output: {
+            sourcemap: false,
+            format: 'umd',
+            name: "CoreUI.layout"
+        },
+        context: "window",
+        plugins: [
+            rollupSourcemaps(),
+            rollupBabel({babelHelpers: 'bundled'}),
+        ]
+    })
+        .pipe(source(conf.js.fileMin))
+        .pipe(buffer())
         .pipe(sourcemaps.init())
-        .pipe(concat(conf.js.fileMin, {newLine: ";\n"}))
+        .pipe(uglify())
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest(conf.dist));
 });
 
-gulp.task('build_js', function() {
-    return gulp.src(conf.js.src)
-        .pipe(concat(conf.js.file, {newLine: ";\n"}))
+
+gulp.task('build_bootstrap', function() {
+    return gulp.src(conf.css_bootstrap.main)
+        .pipe(sourcemaps.init())
+        .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
+        .pipe(concat(conf.css_bootstrap.fileMin))
+        .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest(conf.dist));
 });
 
