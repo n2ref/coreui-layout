@@ -1,3 +1,4 @@
+import coreuiLayoutUtils from "./coreui.layout.utils";
 
 let CoreuiLayoutPrivate = {
 
@@ -59,7 +60,9 @@ let CoreuiLayoutPrivate = {
                 ) {
                     let name = data[i].component.split('.')[1];
 
-                    if (CoreUI.hasOwnProperty(name)) {
+                    if (CoreUI.hasOwnProperty(name) &&
+                        coreuiLayoutUtils.isObject(CoreUI[name])
+                    ) {
                         let instance = CoreUI[name].create(data[i]);
                         result.push(instance.render());
 

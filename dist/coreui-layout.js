@@ -93,7 +93,7 @@
             result.push(data[i]);
           } else if (!Array.isArray(data[i]) && data[i].hasOwnProperty('component') && data[i].component.substring(0, 6) === 'coreui') {
             var name = data[i].component.split('.')[1];
-            if (CoreUI.hasOwnProperty(name)) {
+            if (CoreUI.hasOwnProperty(name) && CoreuiLayoutUtils.isObject(CoreUI[name])) {
               var instance = CoreUI[name].create(data[i]);
               result.push(instance.render());
               layout.on('shown.coreui.layout', instance.initEvents, instance, true);
