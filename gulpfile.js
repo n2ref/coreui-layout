@@ -63,7 +63,6 @@ gulp.task('build_js_min_fast', function() {
         .pipe(gulp.dest(conf.dist));
 });
 
-
 gulp.task('build_js_min', function() {
     return rollup({
         input: conf.js.main,
@@ -90,7 +89,7 @@ gulp.task('build_js_min', function() {
 gulp.task('build_bootstrap', function() {
     return gulp.src(conf.css_bootstrap.main)
         .pipe(sourcemaps.init())
-        .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
+        .pipe(sass({includePaths: ['node_modules'], outputStyle: 'compressed'}).on('error', sass.logError))
         .pipe(concat(conf.css_bootstrap.fileMin))
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest(conf.dist));
