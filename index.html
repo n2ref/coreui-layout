@@ -30,9 +30,8 @@
                                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                                         <li class="nav-item"><a class="nav-link" href="https://n2ref.github.io/coreui-panel">Panel</a></li>
                                         <li class="nav-item"><a class="nav-link" href="https://n2ref.github.io/coreui-form">Form</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="https://n2ref.github.io/coreui-tabs">Tabs</a></li>
-                                        <li class="nav-item"><span class="nav-link active">Layout</span></li>
                                         <li class="nav-item"><a class="nav-link" href="https://n2ref.github.io/coreui-table">Table</a></li>
+                                        <li class="nav-item"><span class="nav-link active">Layout</span></li>
                                         <li class="nav-item"><a class="nav-link" href="https://n2ref.github.io/coreui-info">Info</a></li>
                                         <li class="nav-item"><a class="nav-link" href="https://n2ref.github.io/coreui-modal">Modal</a></li>
                                         <li class="nav-item"><a class="nav-link" href="https://n2ref.github.io/coreui-notice">Notice</a></li>
@@ -53,7 +52,7 @@
                     <div id="docs-sidenav" class="hidden-xs hidden-sm hidden-md d-none d-lg-block"
                          data-bs-spy="affix" data-bs-offset-top="90" data-bs-offset-bottom="70">
                         <ul class="nav">
-                            <li><a href="#download">Download</a></li>
+                            <li><a href="#get-started">Get started</a></li>
                             <li>
                                 <a href="#examples">Examples</a>
                                 <ul class="nav">
@@ -79,30 +78,36 @@
                     </div>
                 </div>
                 <div class="col-lg-10">
-                    <h2 id="download">Download</h2>
-                    <div>
+                    <div id="get-started">
+                        <h2 class="mb-4">Get started</h2>
+
+                        <div id="download">
+                            <h4>Download</h4>
+                            <p>
+                                You can download a minimized version of the library or get the full source code at github.com.
+                            </p>
+                            <a class="btn btn-secondary" href="https://github.com/n2ref/coreui-layout/archive/master.zip">Download source</a>
+                        </div>
+
+
+                        <h4 class="section-margin">Install with npm</h4>
+                        <pre><code class="bash">$ npm install coreui-layout</code></pre>
+
+
+                        <h4 class="section-margin">Требования</h4>
                         <p>
-                            You can download a minimized version of the library or get the full source code at github.com.
+                            Для корректной работы на странице необходимо наличие:
+                            <a href="https://getbootstrap.com/docs/5.3" target="_blank">Bootstrap 5</a>,
+                            <a href="https://jquery.com" target="_blank">jquery</a>
                         </p>
-                        <a class="btn btn-secondary" href="https://github.com/n2ref/coreui-layout/archive/master.zip">Download source</a>
                     </div>
 
+                    <div id="examples">
+                        <h2 class="section-margin mb-4">Examples</h2>
 
-                    <h2 class="section-margin">Install with npm</h2>
-                    <pre><code class="bash">$ npm install coreui-layout</code></pre>
+                        <div id="example-simple" class="mb-4">
+                            <h4>Simple layout</h4>
 
-
-                    <h2 class="section-margin">Требования</h2>
-                    <p>
-                        Для корректной работы на странице необходимо наличие:
-                        <a href="https://getbootstrap.com/docs/5.3" target="_blank">Bootstrap 5</a>,
-                        <a href="https://jquery.com" target="_blank">jquery</a>
-                    </p>
-
-                    <h2 id="examples" class="section-margin">Examples</h2>
-                    <div>
-                        <h3 id="example-simple">Simple layout</h3>
-                        <div>
                             <div class="content-example">
                                 <div id="layout-items"></div>
                             </div>
@@ -123,10 +128,11 @@
                                 </code></pre>
                             </div>
                         </div>
-                        <br><br>
 
-                        <h3 id="example-nested">Nested</h3>
-                        <div>
+
+                        <div id="example-nested" class="mb-4">
+                            <h4>Nested</h4>
+
                             <div class="content-example">
                                 <div id="layout-nested"></div>
                             </div>
@@ -153,11 +159,11 @@
                                 </code></pre>
                             </div>
                         </div>
-                        <br><br>
 
 
-                        <h3 id="example-direction">Direction</h3>
-                        <div>
+                        <div id="example-direction" class="mb-4">
+                            <h4>Direction</h4>
+
                             <div class="content-example">
                                 <div id="layout-direction-row"></div><br>
                                 <div id="layout-direction-row-reverse"></div><br>
@@ -186,11 +192,11 @@
                                 </code></pre>
                             </div>
                         </div>
-                        <br><br>
 
 
-                        <h3 id="example-justify">Justify content</h3>
-                        <div>
+                        <div id="example-justify" class="mb-4">
+                            <h4>Justify content</h4>
+
                             <div class="content-example">
                                 <div id="layout-justify-start"></div><br>
                                 <div id="layout-justify-end"></div><br>
@@ -225,11 +231,11 @@
                                 </code></pre>
                             </div>
                         </div>
-                        <br><br>
 
 
-                        <h3 id="example-align">Align items</h3>
-                        <div>
+                        <div id="example-align" class="mb-4">
+                            <h4>Align items</h4>
+
                             <div class="content-example">
                                 <div id="layout-align-start"></div><br>
                                 <div id="layout-align-end"></div><br>
@@ -261,11 +267,11 @@
                                 </code></pre>
                             </div>
                         </div>
-                        <br><br>
 
 
-                        <h3 id="example-align-self">Align self</h3>
-                        <div>
+                        <div id="example-align-self" class="mb-4">
+                            <h4>Align self</h4>
+
                             <div class="content-example">
                                 <div id="layout-align-self-start"></div><br>
                                 <div id="layout-align-self-end"></div><br>
@@ -335,11 +341,11 @@
                                 </code></pre>
                             </div>
                         </div>
-                        <br><br>
 
 
-                        <h3 id="example-fill">Fill</h3>
-                        <div>
+                        <div id="example-fill" class="mb-4">
+                            <h4>Fill</h4>
+
                             <div class="content-example">
                                 <div id="layout-fill"></div>
                             </div>
@@ -359,11 +365,11 @@
                                 </code></pre>
                             </div>
                         </div>
-                        <br><br>
 
 
-                        <h3 id="example-wrap">Wrap</h3>
-                        <div>
+                        <div id="example-wrap" class="mb-4">
+                            <h4>Wrap</h4>
+
                             <div class="content-example">
                                 <div id="layout-wrap-simple"></div><br>
                                 <div id="layout-nowrap"></div><br>
@@ -441,11 +447,11 @@
                                 </code></pre>
                             </div>
                         </div>
-                        <br><br>
 
 
-                        <h3 id="example-order">Order</h3>
-                        <div>
+                        <div id="example-order" class="mb-4">
+                            <h4>Order</h4>
+
                             <div class="content-example">
                                 <div id="layout-order1"></div><br>
                                 <div id="layout-order2"></div>
@@ -482,11 +488,11 @@
                                 </code></pre>
                             </div>
                         </div>
-                        <br><br>
 
 
-                        <h3 id="example-sizes">Size options</h3>
-                        <div>
+                        <div id="example-sizes">
+                            <h4>Size options</h4>
+
                             <div class="content-example">
                                 <div id="layout-sizes1"></div><br>
                                 <div id="layout-sizes2"></div>
@@ -551,11 +557,11 @@
                                 </code></pre>
                             </div>
                         </div>
-                        <br><br>
 
 
-                        <h3 id="example-overflow">Overflow</h3>
-                        <div>
+                        <div id="example-overflow" class="mb-4">
+                            <h4>Overflow</h4>
+
                             <div class="content-example">
                                 <div id="layout-overflow"></div>
                             </div>
@@ -578,11 +584,11 @@
                                 </code></pre>
                             </div>
                         </div>
-                        <br><br>
 
 
-                        <h3 id="example-all">All options</h3>
-                        <div>
+                        <div id="example-all" class="mb-4">
+                            <h4>All options</h4>
+
                             <div class="content-example">
                                 <div id="layout-all"></div>
                             </div>
@@ -655,13 +661,12 @@
                                 </code></pre>
                             </div>
                         </div>
-                        <br><br>
-
                     </div>
 
 
-                    <h2 id="options-layout" class="section-margin">Options layout</h2>
-                    <div class="table-responsive">
+                    <div id="options-layout" class="table-responsive mb-4">
+                        <h2 class="section-margin">Options layout</h2>
+
                         <table class="table table-bordered table-striped js-options-table">
                             <thead>
                             <tr>
@@ -749,8 +754,8 @@
                     </div>
 
 
-                    <h2 id="options-layout-item" class="section-margin">Options layout item</h2>
-                    <div class="table-responsive">
+                    <div id="options-layout-item" class="table-responsive mb-4">
+                        <h2 class="section-margin">Options layout item</h2>
                         <table class="table table-bordered table-striped js-options-table">
                             <thead>
                             <tr>
@@ -830,8 +835,8 @@
                     </div>
 
 
-                    <h2 id="methods" class="section-margin">Methods</h2>
-                    <div>
+                    <div id="methods" class="mb-4">
+                        <h2 class="section-margin">Methods</h2>
                         <code>let layout = CoreUI.layout.create( options )</code>
                         <p>Метод для создания экземпляра макета</p>
 
@@ -863,8 +868,9 @@
 
 
 
-                    <h2 id="events" class="section-margin">Events</h2>
-                    <div class="table-responsive">
+                    <div id="events" class="table-responsive mb-4">
+                        <h2 class="section-margin">Events</h2>
+
                         <table class="table table-bordered table-striped js-options-table">
                             <thead>
                             <tr>
@@ -884,8 +890,6 @@
                             </tbody>
                         </table>
                     </div>
-                    <br>
-                    <br>
                 </div>
             </div>
         </div>
