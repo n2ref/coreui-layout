@@ -1,18 +1,17 @@
-import coreuiLayoutInstance from "./coreui.layout.instance";
-import coreuiLayoutUtils    from "./coreui.layout.utils";
+import LayoutInstance from "./layout.instance";
+import LayoutUtils    from "./layout.utils";
 
-let coreuiLayout = {
+let Layout = {
 
     _instances: {},
 
     /**
      * @param {object} options
-     * @returns {object}
+     * @returns {LayoutInstance}
      */
     create: function (options) {
 
-        let instance = $.extend(true, {}, coreuiLayoutInstance);
-        instance._init(coreuiLayoutUtils.isObject(options) ? options : {});
+        let instance = new LayoutInstance(LayoutUtils.isObject(options) ? options : {});
 
         let layoutId = instance.getId();
         this._instances[layoutId] = instance;
@@ -40,4 +39,4 @@ let coreuiLayout = {
     }
 }
 
-export default coreuiLayout;
+export default Layout;

@@ -1,6 +1,6 @@
-import coreuiLayoutUtils from "./coreui.layout.utils";
+import LayoutUtils from "./layout.utils";
 
-let CoreuiLayoutPrivate = {
+let LayoutPrivate = {
 
     /**
      * Выполнение события
@@ -54,6 +54,14 @@ let CoreuiLayoutPrivate = {
                 if (typeof data[i] === 'string') {
                     result.push(data[i]);
 
+                } else if (data[i] instanceof Object &&
+                    typeof data[i].render === 'function' &&
+                    typeof data[i].initEvents === 'function'
+                ) {
+                    result.push(data[i].render());
+
+                    layout.on('shown.coreui.layout', data[i].initEvents, data[i], true);
+
                 } else if ( ! Array.isArray(data[i]) &&
                     data[i].hasOwnProperty('component') &&
                     data[i].component.substring(0, 6) === 'coreui'
@@ -61,7 +69,7 @@ let CoreuiLayoutPrivate = {
                     let name = data[i].component.split('.')[1];
 
                     if (CoreUI.hasOwnProperty(name) &&
-                        coreuiLayoutUtils.isObject(CoreUI[name])
+                        LayoutUtils.isObject(CoreUI[name])
                     ) {
                         let instance = CoreUI[name].create(data[i]);
                         result.push(instance.render());
@@ -81,4 +89,4 @@ let CoreuiLayoutPrivate = {
     }
 }
 
-export default CoreuiLayoutPrivate;
+export default LayoutPrivate;

@@ -1,5 +1,5 @@
 
-let CoreuiLayoutUtils = {
+let LayoutUtils = {
 
     /**
      * Проверка на объект
@@ -46,4 +46,4 @@ let CoreuiLayoutUtils = {
     }
 };
 
-export default CoreuiLayoutUtils;
+export default LayoutUtils;

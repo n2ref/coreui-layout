@@ -15,7 +15,7 @@ var conf = {
     js: {
         fileMin: 'coreui-layout.min.js',
         file: 'coreui-layout.js',
-        main: 'src/js/main.js',
+        main: 'src/main.js',
         src: 'src/js/**/*.js'
     },
     css_bootstrap: {
@@ -80,7 +80,11 @@ gulp.task('build_js_min', function() {
         .pipe(source(conf.js.fileMin))
         .pipe(buffer())
         .pipe(sourcemaps.init())
-        .pipe(uglify())
+        .pipe(uglify({
+            mangle: {
+                reserved: ['LayoutInstance']
+            }
+        }))
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest(conf.dist));
 });

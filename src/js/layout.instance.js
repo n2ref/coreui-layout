@@ -1,9 +1,9 @@
-import coreuiLayoutUtils   from "./coreui.layout.utils";
-import coreuiLayoutPrivate from "./coreui.layout.private";
+import LayoutUtils   from "./layout.utils";
+import LayoutPrivate from "./layout.private";
 
-let coreuiLayoutInstance = {
+class LayoutInstance {
 
-    _options: {
+    _options = {
         id: '',
         justify: "start", // start, end, center, between, around, evenly
         align: "start", // start, end, center, baseline, stretch
@@ -21,8 +21,9 @@ let coreuiLayoutInstance = {
         gap: null,
         items: [],
         sizes: {},
-    },
-    _item: {
+    };
+
+    _item = {
         id: '',
         align: null, // start, end, center, baseline, stretch
         order: null, // 0 - 5
@@ -37,77 +38,77 @@ let coreuiLayoutInstance = {
         minHeight: null,
         naxHeight: null,
         sizes: {},
-    },
+    };
 
-    _id: '',
-    _events: {},
+    _id = '';
+    _events = {};
 
 
     /**
      * Инициализация
      * @param options
      */
-    _init: function (options) {
+    constructor(options) {
 
         this._options = $.extend(true, {}, this._options, options);
         this._id      = this._options.hasOwnProperty('id') && typeof this._options.id === 'string' && this._options.id
             ? this._options.id
-            : coreuiLayoutUtils.hashCode();
+            : LayoutUtils.hashCode();
 
 
         let that = this;
 
         $.each(this._options.items, function (key, item) {
 
-            if (coreuiLayoutUtils.isObject(item)) {
+            if (LayoutUtils.isObject(item)) {
                 if ( ! item.hasOwnProperty('id') ||
                     typeof item.id !== 'string' ||
                     ! item.id
                 ) {
-                    that._options.items[key].id = coreuiLayoutUtils.hashCode();
+                    that._options.items[key].id = LayoutUtils.hashCode();
                 }
             }
         });
-    },
+    }
 
 
     /**
      *
      */
-    initEvents: function () {
+    initEvents() {
 
-        coreuiLayoutPrivate.trigger(this, 'shown.coreui.layout');
-    },
+        LayoutPrivate.trigger(this, 'shown.coreui.layout');
+    }
 
 
     /**
      *
      * @returns {*}
      */
-    getId: function () {
+    getId() {
         return this._id;
-    },
+    }
 
 
     /**
      * @param itemId
      * @param content
      */
-    setItemContent: function (itemId, content) {
+    setItemContent(itemId, content) {
 
         let container = $('#coreui-layout-' + this.getId() + ' .item-' + itemId);
 
         if (container[0]) {
-            let contents = coreuiLayoutPrivate.renderContent(this, content);
+            let contents = LayoutPrivate.renderContent(this, content);
             container.empty();
 
             $.each(contents, function (key, content) {
                 container.append(content);
             });
 
-            coreuiLayoutPrivate.trigger(this, 'show-content.coreui.layout', this, [itemId]);
+            LayoutPrivate.trigger(this, 'show-content.coreui.layout', this, [itemId]);
         }
-    },
+    }
 
 
     /**
@@ -115,7 +116,7 @@ let coreuiLayoutInstance = {
      * @param element
      * @returns {*}
      */
-    render: function(element) {
+    render(element) {
 
         let containerClasses = [];
         let containerStyles  = [];
@@ -372,7 +373,7 @@ let coreuiLayoutInstance = {
             }
 
 
-            let contents = coreuiLayoutPrivate.renderContent(that, item.content);
+            let contents = LayoutPrivate.renderContent(that, item.content);
             let styles   = itemStyles.length > 0 ? ' style="' + itemStyles.join(';') + '"' : '';
 
             let itemContent = $('<div class="' + itemClasses.join(' ') + '"' + styles + '></div>');
@@ -394,7 +395,7 @@ let coreuiLayoutInstance = {
                  'class="coreui-layout d-flex ' + containerClasses.join(' ') + '"' + styles + '></div>'
         );
 
-        $.each(containerItems, function (name, containerItem) {
+        containerItems.map(function (containerItem) {
             html.append(containerItem);
         });
 
@@ -421,7 +422,7 @@ let coreuiLayoutInstance = {
         $(domElement).html(html);
 
         this.initEvents();
-    },
+    }
 
 
     /**
@@ -430,7 +431,8 @@ let coreuiLayoutInstance = {
      * @param context
      * @param singleExec
      */
-    on: function(eventName, callback, context, singleExec) {
+    on(eventName, callback, context, singleExec) {
+
         if (typeof this._events[eventName] !== 'object') {
             this._events[eventName] = [];
         }
@@ -442,4 +444,4 @@ let coreuiLayoutInstance = {
     }
 }
 
-export default coreuiLayoutInstance;
+export default LayoutInstance;
