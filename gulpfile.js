@@ -2,10 +2,13 @@ const gulp             = require('gulp');
 const concat           = require('gulp-concat');
 const sourcemaps       = require('gulp-sourcemaps');
 const uglify           = require('gulp-uglify');
+const htmlToJs         = require('gulp-html-to-js');
+const wrapFile         = require('gulp-wrap-file');
 const sass             = require('gulp-sass')(require('sass'));
 const rollup           = require('@rollup/stream');
 const rollupSourcemaps = require('rollup-plugin-sourcemaps');
 const rollupBabel      = require('@rollup/plugin-babel');
+const nodeResolve      = require('@rollup/plugin-node-resolve');
 const source           = require('vinyl-source-stream');
 const buffer           = require("vinyl-buffer");
 
@@ -18,12 +21,50 @@ var conf = {
         main: 'src/main.js',
         src: 'src/js/**/*.js'
     },
+    tpl: {
+        file: 'layout.tpl.js',
+        dist: './src/js',
+        src: [
+            'src/html/**/*.html',
+        ]
+    },
+    css: {
+        fileMin: 'coreui-layout.min.css',
+        file: 'coreui-layout.css',
+        main: 'src/main.scss',
+        src: [
+            'src/css/*.scss',
+        ]
+    },
     css_bootstrap: {
         fileMin: 'coreui.layout.bootstrap.min.css',
         main: 'src/css/coreui.layout.bootstrap.scss',
     }
 };
 
+
+gulp.task('build_css_min', function(){
+    return gulp.src(conf.css.main)
+        .pipe(sourcemaps.init())
+        .pipe(sass({includePaths: ['node_modules'], outputStyle: 'compressed'}).on('error', sass.logError))
+        .pipe(concat(conf.css.fileMin))
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest(conf.dist));
+});
+
+gulp.task('build_css_min_fast', function(){
+    return gulp.src(conf.css.main)
+        .pipe(sass({includePaths: ['node_modules']}).on('error', sass.logError))
+        .pipe(concat(conf.css.fileMin))
+        .pipe(gulp.dest(conf.dist));
+});
+
+gulp.task('build_css', function(){
+    return gulp.src(conf.css.main)
+        .pipe(sass({includePaths: ['node_modules']}).on('error', sass.logError))
+        .pipe(concat(conf.css.file))
+        .pipe(gulp.dest(conf.dist));
+});
 
 
 gulp.task('build_js', function() {
@@ -36,6 +77,7 @@ gulp.task('build_js', function() {
         },
         context: "window",
         plugins: [
+            nodeResolve(),
             rollupBabel({babelHelpers: 'bundled'}),
         ]
     })
@@ -54,6 +96,7 @@ gulp.task('build_js_min_fast', function() {
         },
         context: "window",
         plugins: [
+            nodeResolve(),
             rollupSourcemaps(),
             rollupBabel({babelHelpers: 'bundled'}),
         ]
@@ -67,12 +110,13 @@ gulp.task('build_js_min', function() {
     return rollup({
         input: conf.js.main,
         output: {
-            sourcemap: false,
+            sourcemap: true,
             format: 'umd',
             name: "CoreUI.layout"
         },
         context: "window",
         plugins: [
+            nodeResolve(),
             rollupSourcemaps(),
             rollupBabel({babelHelpers: 'bundled'}),
         ]
@@ -89,6 +133,20 @@ gulp.task('build_js_min', function() {
         .pipe(gulp.dest(conf.dist));
 });
 
+gulp.task('build_tpl', function() {
+
+    return gulp.src(conf.tpl.src)
+        .pipe(htmlToJs({global: 'tpl', concat: conf.tpl.file}))
+        .pipe(wrapFile({
+            wrapper: function(content, file) {
+                content = content.replace(/\\n/g, ' ');
+                content = content.replace(/[ ]{2,}/g, ' ');
+                return 'let ' + content + ";\nexport default tpl;"
+            }
+        }))
+        .pipe(gulp.dest(conf.tpl.dist));
+});
+
 
 gulp.task('build_bootstrap', function() {
     return gulp.src(conf.css_bootstrap.main)
@@ -100,7 +158,9 @@ gulp.task('build_bootstrap', function() {
 });
 
 gulp.task('build_watch', function() {
+    gulp.watch(conf.css.src, gulp.series(['build_css_min_fast']));
     gulp.watch(conf.js.src, gulp.parallel(['build_js_min_fast']));
+    gulp.watch(conf.tpl.src, gulp.series(['build_tpl', 'build_js_min_fast']));
 });
 
-gulp.task("default", gulp.series(['build_js_min', 'build_js']));
+gulp.task("default", gulp.series(['build_tpl', 'build_js_min', 'build_js', 'build_css_min', 'build_css']));

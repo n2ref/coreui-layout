@@ -1,10 +1,14 @@
+import 'ejs/ejs.min';
 import LayoutUtils   from "./layout.utils";
 import LayoutPrivate from "./layout.private";
+import LayoutTpl     from "./layout.tpl";
 
 class LayoutInstance {
 
     _options = {
         id: '',
+        lang: 'en',
+        langList: {},
         justify: "start", // start, end, center, between, around, evenly
         align: "start", // start, end, center, baseline, stretch
         direction: "row", // column, column-reverse, row, row-reverse
@@ -58,7 +62,7 @@ class LayoutInstance {
 
         let that = this;
 
-        $.each(this._options.items, function (key, item) {
+        this._options.items.map(function (item, key) {
 
             if (LayoutUtils.isObject(item)) {
                 if ( ! item.hasOwnProperty('id') ||
@@ -91,8 +95,8 @@ class LayoutInstance {
 
 
     /**
-     * @param itemId
-     * @param content
+     * @param {string} itemId
+     * @param {*}      content
      */
     setItemContent(itemId, content) {
 
@@ -102,12 +106,97 @@ class LayoutInstance {
             let contents = LayoutPrivate.renderContent(this, content);
             container.empty();
 
-            $.each(contents, function (key, content) {
+            contents.map(function (content) {
                 container.append(content);
             });
 
             LayoutPrivate.trigger(this, 'show-content.coreui.layout', this, [itemId]);
+
+        } else {
+            this._options.items.map(function (item) {
+                if (LayoutUtils.isObject(item) &&
+                    item.hasOwnProperty('id') &&
+                    item.id === itemId
+                ) {
+                    item.content = content;
+                }
+            });
         }
+    }
+
+
+    /**
+     * @param {string} itemId
+     * @param {string} url
+     */
+    loadItemContent(itemId, url) {
+
+        let container = $('#coreui-layout-' + this.getId() + ' .item-' + itemId);
+
+        if (container[0]) {
+            let that = this;
+
+            this.lock(itemId);
+
+            $.ajax({
+                url: url,
+                method: 'get',
+                success: function (result) {
+                    that.setItemContent(itemId, result);
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    that.setItemContent(itemId, '');
+                },
+                complete: function(xhr, textStatus) {
+                    that.unlock(itemId);
+                },
+            });
+        }
+    }
+
+
+    /**
+     * Блокировка панели
+     * @param {string} itemId
+     * @param {string} text
+     */
+    lock(itemId, text) {
+
+        let container = $('#coreui-layout-' + this.getId() + ' .item-' + itemId);
+
+        if (container[0] && ! container.find('.coreui-layout-lock')[0]) {
+            let html = ejs.render(LayoutTpl['loader.html'], {
+                loading: typeof text === 'string' ? text : this.getLang().loading
+            });
+
+            container.prepend(html);
+        }
+    }
+
+
+    /**
+     * Разблокировка панели
+     * @param {string} itemId
+     */
+    unlock(itemId) {
+
+        let container = $('#coreui-layout-' + this._id + ' .item-' + itemId + ' > .coreui-layout-lock');
+
+        if (container[0]) {
+            container.hide(50, function () {
+                $(this).remove()
+            });
+        }
+    }
+
+
+    /**
+     * Получение переводов текущего языка
+     * @return {object}
+     */
+    getLang() {
+
+        return $.extend(true, {}, this._options.langList);
     }
 
 

@@ -35,7 +35,7 @@ let LayoutPrivate = {
      * Формирование контента
      * @param {object} layout
      * @param {*}      data
-     * @returns {string}
+     * @returns {Array}
      * @private
      */
     renderContent: function(layout, data) {

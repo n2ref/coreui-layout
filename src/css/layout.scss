@@ -1,0 +1,19 @@
+
+.coreui-layout {
+
+  .coreui-layout-item {
+    position: relative;
+  }
+
+  .coreui-layout-lock {
+    z-index: 2;
+
+    .coreui-layout-message {
+      width: 200px;
+    }
+    .spinner-border {
+      --bs-spinner-width: 1.5rem;
+      --bs-spinner-height: 1.5rem;
+    }
+  }
+}

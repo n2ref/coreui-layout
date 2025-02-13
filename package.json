@@ -1,31 +1,35 @@
 {
   "name": "coreui-layout",
-  "version": "1.0.11",
+  "version": "1.1.0",
   "description": "CoreUI Layout",
   "scripts": {
-    "build_all": "gulp build_js_min && gulp build_js && npm run test_js",
+    "build_all": "gulp build_tpl && gulp build_js_min && gulp build_js && gulp build_css_min && gulp build_css && npm run test_js",
     "build_watch": "gulp build_watch",
     "build_bootstrap": "gulp build_bootstrap",
     "test_js": "eslint -c .eslintrc.json --max-warnings 100 --ext .js ./dist"
   },
   "dependencies": {
+    "ejs": "3.1.10"
   },
   "devDependencies": {
     "gulp": "5.0.0",
     "gulp-concat": "2.6.1",
     "gulp-sourcemaps": "3.0.0",
     "gulp-uglify": "3.0.2",
-    "gulp-sass": "5.1.0",
+    "gulp-sass": "6.0.0",
+    "gulp-wrap-file": "0.1.2",
+    "gulp-html-to-js": "0.0.7",
     "sass": "1.74.1",
     "@rollup/stream": "3.0.1",
     "@rollup/plugin-babel": "6.0.4",
+    "@rollup/plugin-node-resolve": "16.0.0",
     "rollup-plugin-sourcemaps": "0.6.3",
     "vinyl-source-stream": "2.0.0",
     "vinyl-buffer": "1.0.1",
-    "@babel/plugin-transform-template-literals": "7.24.1",
-    "@babel/preset-env": "7.24.4",
+    "@babel/plugin-transform-template-literals": "7.26.8",
+    "@babel/preset-env": "7.26.8",
     "bootstrap": "5.3.3",
-    "eslint": "8.57.0"
+    "eslint": "8.57.1"
   },
   "repository": {
     "type": "git",
