@@ -9,6 +9,7 @@
     <link href="dist/page.min.css" rel="stylesheet"/>
     <script src="dist/page.min.js"></script>
 
+    <link href="dist/coreui-layout.min.css" rel="stylesheet"/>
     <script src="dist/coreui-layout.min.js"></script>
 
     <script src="src/js/examples.js"></script>
@@ -67,6 +68,7 @@
                                     <li><a href="#example-order">Order</a></li>
                                     <li><a href="#example-sizes">Size options</a></li>
                                     <li><a href="#example-overflow">Overflow</a></li>
+                                    <li><a href="#example-content">Content</a></li>
                                     <li><a href="#example-all">All options</a></li>
                                 </ul>
                             </li>
@@ -586,6 +588,78 @@
                         </div>
 
 
+                        <div id="example-content" class="mb-4">
+                            <h4>Content</h4>
+
+                            <div class="content-example">
+                                <button class="btn btn-secondary" id="content-left-set">Left set</button>
+                                <button class="btn btn-secondary" id="content-left-load">Left load</button>
+
+                                <button class="btn btn-secondary ms-4" id="content-right-set">Right set</button>
+                                <button class="btn btn-secondary"      id="content-right-load">Right load</button>
+
+                                <div id="layout-content" class="mt-3"></div>
+                            </div>
+                            <div class="content-markup">
+                                <pre><code class="html">
+    &lt;button class="btn btn-secondary" id="content-left-set"&gt;Left set&lt;/button&gt;
+    &lt;button class="btn btn-secondary" id="content-left-load"&gt;Left load&lt;/button&gt;
+
+    &lt;button class="btn btn-secondary" id="content-right-set"&gt;Right set&lt;/button&gt;
+    &lt;button class="btn btn-secondary" id="content-right-load"&gt;Right load&lt;/button&gt;
+
+    &lt;div id="layout-content"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        let layoutContent = CoreUI.layout.create({
+            id: 'content',
+            direction: "row",
+            items: [
+                { id: "left",  width: '50%', height: 200, content: "Left" },
+                { id: "right", width: '50%', height: 200, content: "Right" },
+            ]
+        });
+
+        $('#layout-content').html(layoutContent.render());
+        layoutContent.initEvents();
+
+
+        // LEFT
+        $('#content-left-load').click(function () {
+            layoutContent.loadItemContent('left', 'data/text.txt');
+        });
+
+        $('#content-left-set').click(function () {
+            layoutContent.setItemContent('left', 'Raw denim you probably haven\'t heard of them jean shorts Austin.');
+        });
+
+
+        // RIGTH
+        $('#content-right-load').click(function () {
+            layoutContent.loadItemContent('right', 'data/text.txt');
+        });
+
+        $('#content-right-set').click(function () {
+
+            layoutContent.setItemContent('right',
+
+                CoreUI.layout.create({
+                    align: "stretch",
+                    height: 100,
+                    items: [
+                        { "content": "Left" },
+                        { "width": 200, "content": "Center", align: "start" },
+                        { "width": 100, "content": "Right" },
+                    ]
+                })
+            );
+        });
+    &lt;/script&gt;
+                                </code></pre>
+                            </div>
+                        </div>
+
+
                         <div id="example-all" class="mb-4">
                             <h4>All options</h4>
 
@@ -680,6 +754,10 @@
                             <tr>
                                 <th>id</th> <td>string</td> <td><code>crc32b</code></td>
                                 <td>Идентификатор макета. По умолчанию равен уникальному значению</td>
+                            </tr>
+                            <tr>
+                                <th>lang</th> <td>string</td> <td><code>en</code></td>
+                                <td>Двухбуквенное обозначение языка</td>>
                             </tr>
                             <tr>
                                 <th>justify</th> <td>string</td> <td><code>start</code></td>
@@ -837,13 +915,13 @@
 
                     <div id="methods" class="mb-4">
                         <h2 class="section-margin">Methods</h2>
-                        <code>let layout = CoreUI.layout.create( options )</code>
+                        <code>let layout = CoreUI.layout.create(options)</code>
                         <p>Метод для создания экземпляра макета</p>
 
-                        <code>let layout = CoreUI.layout.get( id )</code>
+                        <code>let layout = CoreUI.layout.get(id)</code>
                         <p>Получение ранее созданного экземпляра макета по его id</p>
 
-                        <code>layout.render( element )</code>
+                        <code>layout.render(element)</code>
                         <p>
                             Формирование и размещение макета в указанном dom элементе или указанном id элемента.
                             Если Элемент не указан, то сформированный html будет возвращен в ответе этого метода.
@@ -855,14 +933,26 @@
                         </p>
 
                         <code>layout.setItemContent(itemId, content)</code>
-                        <p>Установка содержимого внутри какого-либо элемента, указанного по id.</p>
+                        <p>Установка содержимого внутри какого-либо блока, указанного по id.</p>
+
+                        <code>layout.loadItemContent(itemId, url)</code>
+                        <p>Загрузка содержимого внутри какого-либо блока, указанного по id.</p>
+
+                        <code>layout.lock(itemId, text)</code>
+                        <p>Блокирует работу с блоком и показывает сообщение о загрузке</p>
+
+                        <code>layout.unlock(itemId)</code>
+                        <p>Разблокирует работу с блоком</p>
+
+                        <code>layout.getLang()</code>
+                        <p>Получение переводов текущего языка</p>
 
                         <code>layout.getId()</code>
                         <p>
                             Получение id у созданного экземпляра
                         </p>
 
-                        <code>layout.on( eventName, function )</code>
+                        <code>layout.on(eventName, function)</code>
                         <p>Установка своего обработчика на какое-либо событие</p>
                     </div>
 

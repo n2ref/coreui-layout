@@ -291,6 +291,60 @@ document.addEventListener('DOMContentLoaded', function () {
     }).render('layout-overflow');
 
 
+    // Content
+    let layoutContent = CoreUI.layout.create({
+        id: 'content',
+        direction: "row",
+        items: [
+            { id: "left",  width: '50%', height: 200, content: "Left" },
+            { id: "right", width: '50%', height: 200, content: "Right" },
+        ]
+    });
+
+    $('#layout-content').html(
+        layoutContent.render()
+    );
+
+    layoutContent.initEvents();
+
+    $('#content-left-load').click(function () {
+        layoutContent.lock('left');
+
+        setTimeout(function () {
+            layoutContent.loadItemContent('left', 'data/text.txt');
+        }, 500)
+    });
+
+    $('#content-left-set').click(function () {
+        layoutContent.setItemContent('left', 'Raw denim you probably haven\'t heard of them jean shorts Austin.');
+    });
+
+
+    $('#content-right-load').click(function () {
+        layoutContent.lock('right');
+
+        setTimeout(function () {
+            layoutContent.loadItemContent('right', 'data/text.txt');
+        }, 500)
+    });
+
+    $('#content-right-set').click(function () {
+
+        layoutContent.setItemContent('right',
+
+            CoreUI.layout.create({
+                align: "stretch",
+                height: 100,
+                items: [
+                    { "content": "Left" },
+                    { "width": 200, "content": "Center", align: "start" },
+                    { "width": 100, "content": "Right" },
+                ]
+            })
+        );
+    });
+
+
     // All options
     let layoutAll = CoreUI.layout.create({
         id: "layout-all-id",
@@ -347,8 +401,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    let layoutContent = layoutAll.render();
-    $('#layout-all').html(layoutContent);
+    $('#layout-all').html(
+        layoutAll.render()
+    );
     layoutAll.initEvents();
 
     layoutAll.setItemContent('id-sidebar', "Set Item Content");
