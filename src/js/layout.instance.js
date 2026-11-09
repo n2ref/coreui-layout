@@ -95,6 +95,16 @@ class LayoutInstance {
 
 
     /**
+     * Проверка показывается ли компонент
+     * @returns {boolean}
+     */
+    isShow() {
+
+        return !! $('#coreui-layout-' + this.getId()).is(':visible');
+    }
+
+
+    /**
      * @param {string} itemId
      * @param {*}      content
      */
@@ -108,6 +118,12 @@ class LayoutInstance {
 
             contents.map(function (content) {
                 container.append(content);
+            });
+
+            LayoutPrivate.getRenderContentEvents().map(function (componentEvent) {
+                if (typeof componentEvent.event === 'function') {
+                    componentEvent.event.apply(componentEvent.context);
+                }
             });
 
             LayoutPrivate.trigger(this, 'show-content.coreui.layout', this, [itemId]);
@@ -468,6 +484,13 @@ class LayoutInstance {
             let itemContent = $('<div class="' + itemClasses.join(' ') + '"' + styles + '></div>');
             $.each(contents, function (name, content) {
                 itemContent.append(content);
+            });
+
+
+            LayoutPrivate.getRenderContentEvents().map(function (componentEvent) {
+                if (typeof componentEvent.event === 'function') {
+                    that.on('shown.coreui.layout', componentEvent.event, componentEvent.context, true);
+                }
             });
 
             containerItems.push(itemContent);

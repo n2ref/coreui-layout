@@ -1192,6 +1192,7 @@
   };
 
   var LayoutPrivate = {
+    _renderEvents: [],
     /**
      * Выполнение события
      * @param {object} layout
@@ -1223,6 +1224,7 @@
      */
     renderContent: function renderContent(layout, data) {
       var result = [];
+      LayoutPrivate._renderEvents = [];
       if (typeof data === 'string') {
         result.push(data);
       } else if (data instanceof Object) {
@@ -1234,13 +1236,19 @@
             result.push(data[i]);
           } else if (data[i] instanceof Object && typeof data[i].render === 'function' && typeof data[i].initEvents === 'function') {
             result.push(data[i].render());
-            layout.on('shown.coreui.layout', data[i].initEvents, data[i], true);
+            LayoutPrivate._renderEvents.push({
+              event: data[i].initEvents,
+              context: data[i]
+            });
           } else if (!Array.isArray(data[i]) && data[i].hasOwnProperty('component') && data[i].component.substring(0, 6) === 'coreui') {
             var name = data[i].component.split('.')[1];
             if (CoreUI.hasOwnProperty(name) && LayoutUtils.isObject(CoreUI[name])) {
               var instance = CoreUI[name].create(data[i]);
               result.push(instance.render());
-              layout.on('shown.coreui.layout', instance.initEvents, instance, true);
+              LayoutPrivate._renderEvents.push({
+                event: instance.initEvents,
+                context: instance
+              });
             } else {
               result.push(JSON.stringify(data[i]));
             }
@@ -1250,6 +1258,13 @@
         }
       }
       return result;
+    },
+    /**
+     * Получение событий которые были отрендерены
+     * @returns {[]}
+     */
+    getRenderContentEvents: function getRenderContentEvents() {
+      return LayoutPrivate._renderEvents;
     }
   };
 
@@ -1346,6 +1361,16 @@
       }
 
       /**
+       * Проверка показывается ли компонент
+       * @returns {boolean}
+       */
+    }, {
+      key: "isShow",
+      value: function isShow() {
+        return !!$('#coreui-layout-' + this.getId()).is(':visible');
+      }
+
+      /**
        * @param {string} itemId
        * @param {*}      content
        */
@@ -1358,6 +1383,11 @@
           container.empty();
           contents.map(function (content) {
             container.append(content);
+          });
+          LayoutPrivate.getRenderContentEvents().map(function (componentEvent) {
+            if (typeof componentEvent.event === 'function') {
+              componentEvent.event.apply(componentEvent.context);
+            }
           });
           LayoutPrivate.trigger(this, 'show-content.coreui.layout', this, [itemId]);
         } else {
@@ -1799,6 +1829,11 @@
           var itemContent = $('<div class="' + itemClasses.join(' ') + '"' + styles + '></div>');
           $.each(contents, function (name, content) {
             itemContent.append(content);
+          });
+          LayoutPrivate.getRenderContentEvents().map(function (componentEvent) {
+            if (typeof componentEvent.event === 'function') {
+              that.on('shown.coreui.layout', componentEvent.event, componentEvent.context, true);
+            }
           });
           containerItems.push(itemContent);
         });

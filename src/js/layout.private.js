@@ -2,6 +2,8 @@ import LayoutUtils from "./layout.utils";
 
 let LayoutPrivate = {
 
+    _renderEvents: [],
+
     /**
      * Выполнение события
      * @param {object} layout
@@ -42,6 +44,9 @@ let LayoutPrivate = {
 
         let result = [];
 
+        LayoutPrivate._renderEvents = [];
+
+
         if (typeof data === 'string') {
             result.push(data);
 
@@ -60,7 +65,7 @@ let LayoutPrivate = {
                 ) {
                     result.push(data[i].render());
 
-                    layout.on('shown.coreui.layout', data[i].initEvents, data[i], true);
+                    LayoutPrivate._renderEvents.push({ event: data[i].initEvents, context: data[i] });
 
                 } else if ( ! Array.isArray(data[i]) &&
                     data[i].hasOwnProperty('component') &&
@@ -74,7 +79,8 @@ let LayoutPrivate = {
                         let instance = CoreUI[name].create(data[i]);
                         result.push(instance.render());
 
-                        layout.on('shown.coreui.layout', instance.initEvents, instance, true);
+                        LayoutPrivate._renderEvents.push({ event: instance.initEvents, context: instance });
+
                     } else {
                         result.push(JSON.stringify(data[i]));
                     }
@@ -86,6 +92,15 @@ let LayoutPrivate = {
         }
 
         return result;
+    },
+
+
+    /**
+     * Получение событий которые были отрендерены
+     * @returns {[]}
+     */
+    getRenderContentEvents: function () {
+        return LayoutPrivate._renderEvents;
     }
 }
 
